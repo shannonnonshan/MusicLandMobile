@@ -1,12 +1,13 @@
+import { MiniPlayer } from '@/components/MiniPlayer';
 import React, { useState } from 'react';
 import {
-    Image,
-    Platform, StatusBar as RNStatusBar, SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  Image,
+  Platform, StatusBar as RNStatusBar, SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
 import '../../global.css';
 export default function TabSearchScreen() {
@@ -41,12 +42,13 @@ export default function TabSearchScreen() {
       </View>      
 
       {/* Nội dung kết quả tìm kiếm */}
-      <ScrollView className=' px-4 pt-5 pb-10 bg-[#000] max-h-full' >
+      <ScrollView className=' px-4 pt-[100px] pb-10 bg-[#000] max-h-full' >
         
         {[...Array(30)].map((_, i) => (
-          <Text key={i} className='text-[#fff] text-base mb-3'>
-            • Result #{i + 1}
-          </Text>
+          <MiniPlayer
+          key={i}
+          bottomOffset={0}
+            bgColor="#222"/>
         ))}
       </ScrollView>
     </SafeAreaView>

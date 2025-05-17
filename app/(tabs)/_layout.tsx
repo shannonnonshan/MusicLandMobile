@@ -1,19 +1,22 @@
+import { HapticTab } from '@/components/HapticTab';
+import { MiniPlayer } from '@/components/MiniPlayer';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-
-import { HapticTab } from '@/components/HapticTab';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'react-native';
-
+import { Image, View } from 'react-native';
+import '../../global.css';
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
+    <View style={{ flex: 1 }}>
+    <MiniPlayer/>
+    
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#fff',
+        tabBarLabelStyle: {
+          fontWeight: 'bold',
+        },
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
@@ -25,6 +28,7 @@ export default function TabLayout() {
           right: 0,
           bottom: 0,
         },
+        
       }}>
       <Tabs.Screen
         name="index"
@@ -57,5 +61,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </View>
   );
 }
