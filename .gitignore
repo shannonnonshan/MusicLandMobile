@@ -8,7 +8,7 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
-package.json-lock.json
+
 # Native
 .kotlin/
 *.orig.*
@@ -37,3 +37,4 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+package.json-lock.json
