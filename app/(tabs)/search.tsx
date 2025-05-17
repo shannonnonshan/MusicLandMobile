@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
     Image,
@@ -8,42 +7,44 @@ import {
     Text,
     TextInput,
     View
-} from 'react-native'; // ✅ Đổi tên để không nhầm với expo-status-bar
-
+} from 'react-native';
+import '../../global.css';
 export default function TabSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
-
       {/* Header cố định */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
+      <View className='bg-[#000]'>
+        <View className='flex-row items-center justify-start px-4'>
+          {/* Logo */}
           <Image
             source={require('../../assets/images/MSlogo.png')}
-            style={styles.logo}
-          />
-          <Text style={styles.headerText}>Search</Text>
+            style={{
+            width: 60,
+            height: 60,
+            }}
+        />
+          <Text className='text-[#fff] text-2xl font-bold'>Search</Text>
         </View>
-      </View>
-
-      {/* Thanh tìm kiếm cố định */}
-      <View style={styles.searchContainer}>
+        <View className='pt-2 w-full bg-[#000] px-4'>
+        {/* <FontAwesome name="search" size={28} color="#aaa"  style={styles.icon}/> */}
         <TextInput
-          style={styles.searchInput}
+          className='bg-[#222] rounded-lg pr-3 py-2 text-[#000] pl-12 text-xl'
           placeholder="Search songs, artists, albums..."
           placeholderTextColor="#aaa"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+        <Text className='text-[#fff] pt-2 pb-3 text-xl mt-5 z-10'>Search result for: {searchQuery}</Text>
       </View>
+      </View>      
 
       {/* Nội dung kết quả tìm kiếm */}
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.resultText}>Search result for: {searchQuery}</Text>
-        {[...Array(5)].map((_, i) => (
-          <Text key={i} style={styles.resultItem}>
+      <ScrollView className=' px-4 pt-5 pb-10 bg-[#000] max-h-full' >
+        
+        {[...Array(30)].map((_, i) => (
+          <Text key={i} className='text-[#fff] text-base mb-3'>
             • Result #{i + 1}
           </Text>
         ))}
@@ -55,71 +56,23 @@ export default function TabSearchScreen() {
 // Tính chiều cao status bar an toàn
 const STATUS_BAR_HEIGHT =
   Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : 0;
-const HEADER_HEIGHT = 80;
+const HEADER_HEIGHT = 40;
 const SEARCH_HEIGHT = 60;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    paddingTop: HEADER_HEIGHT,
+    paddingTop: STATUS_BAR_HEIGHT + 10,
   },
   header: {
-    height: HEADER_HEIGHT,
-    paddingTop: STATUS_BAR_HEIGHT+20,
+    height: HEADER_HEIGHT + SEARCH_HEIGHT,
+    paddingTop: STATUS_BAR_HEIGHT + 20,
     width: '100%',
     backgroundColor: '#111',
-    justifyContent: 'center',
     position: 'absolute',
     top: 0,
-    zIndex: 20,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  logo: {
-    width: 60,
-    height: 60,
-    resizeMode: 'contain',
-    marginRight: 12,
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  searchContainer: {
-    position: 'absolute',
-    top: HEADER_HEIGHT + 20,
-    width: '100%',
-    backgroundColor: 'rgba(30,30,30,0.9)',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
     zIndex: 10,
   },
-  searchInput: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: '#000',
-  },
-  content: {
-    paddingTop: HEADER_HEIGHT + SEARCH_HEIGHT,
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  resultText: {
-    color: '#fff',
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  resultItem: {
-    color: '#ccc',
-    fontSize: 14,
-    marginBottom: 6,
-  },
+
 });
