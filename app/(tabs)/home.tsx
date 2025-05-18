@@ -1,4 +1,4 @@
-import { useMusicContext } from '@/src/contexts/MusicContext';
+import { useMusicContext } from '@/contexts/MusicContext';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -72,10 +72,12 @@ const HomePage = () => {
       </Animated.View>
 
       {/* Recently Played */}
-      <Text style={{ fontSize: 18, fontWeight: '600', color: 'white', marginBottom: 12, flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
         <Disc size={20} color="white" />
-        {'  '}Recently Played
-      </Text>
+        <Text style={{ fontSize: 18, fontWeight: '600', color: 'white', marginLeft: 8 }}>
+          Recently Played
+        </Text>
+      </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
         {recentSongs.length > 0 ? recentSongs.map((song) => (
           <TouchableOpacity
@@ -112,10 +114,12 @@ const HomePage = () => {
       </View>
 
       {/* Featured Playlists */}
-      <Text style={{ fontSize: 18, fontWeight: '600', color: 'white', marginBottom: 12, flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
         <Music size={20} color="white" />
-        {'  '}Featured Playlists
-      </Text>
+        <Text style={{ fontSize: 18, fontWeight: '600', color: 'white', marginLeft: 8 }}>
+          Featured Playlists
+        </Text>
+      </View>
       {featuredPlaylists.map((playlist, index) => (
         <Animated.View
           key={playlist.id}
@@ -127,7 +131,9 @@ const HomePage = () => {
             borderRadius: 12,
             padding: 16,
             marginBottom: 12,
-            backgroundColor: playlist.colors[0], // đơn giản lấy màu đầu, bạn có thể dùng LinearGradient nếu muốn
+            backgroundColor: playlist.colors[0],
+            minHeight: 70,
+            zIndex: featuredPlaylists.length - index,
           }}
         >
           <View>

@@ -1,10 +1,10 @@
-import { useToast } from '@/src/components/ui/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import {
   initialSongs,
   loadSongsFromStorage,
   saveSongsToStorage
-} from '@/src/lib/musicStorage';
-import { formatTime } from '@/src/lib/timeUtils';
+} from '@/lib/musicStorage';
+import { formatTime } from '@/lib/timeUtils';
 import { Audio } from 'expo-av';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 

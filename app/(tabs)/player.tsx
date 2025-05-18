@@ -1,6 +1,6 @@
-import AlbumVisualizer from '@/src/components/AlbumVisualizer';
-import { Slider } from '@/src/components/ui/slider';
-import { useMusicContext } from '@/src/contexts/MusicContext';
+import AlbumVisualizer from '@/components/AlbumVisualizer';
+import { Slider } from '@/components/ui/slider';
+import { useMusicContext } from '@/contexts/MusicContext';
 import { useRouter } from 'expo-router'; // thay useNavigation thành useRouter
 import {
   ChevronDown,
@@ -33,6 +33,7 @@ const PlayerPage = () => {
     formatTime,
   } = useMusicContext();
 
+  
   if (!currentSong) {
     return (
       <View className="flex-1 justify-center items-center p-6 bg-black">

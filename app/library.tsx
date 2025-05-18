@@ -1,5 +1,5 @@
-import SongCard from '@/src/components/SongCard';
-import { useMusicContext } from '@/src/contexts/MusicContext';
+import SongCard from '@/components/SongCard';
+import { useMusicContext } from '@/contexts/MusicContext';
 import { Heart, Library, Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';

@@ -1,8 +1,10 @@
-import type { Song } from '@/src/contexts/MusicContext';
-import { useMusicContext } from '@/src/contexts/MusicContext';
+import type { Song } from '@/contexts/MusicContext';
+import { useMusicContext } from '@/contexts/MusicContext';
+import { useRouter } from 'expo-router';
 import { Heart, Pause, Play } from 'lucide-react-native';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 
 type SongCardProps = {
   song: Song;
@@ -11,12 +13,15 @@ type SongCardProps = {
 
 const SongCard: React.FC<SongCardProps> = ({ song, index }) => {
   const { currentSong, isPlaying, playSong, toggleLike, formatTime } = useMusicContext();
-
+  const router = useRouter();
   const isActive = currentSong && currentSong.id === song.id;
 
   return (
     <TouchableOpacity
-      onPress={() => playSong(song)}
+      onPress={() => {
+        playSong(song)
+        router.push(`/player?$(song.id)`); // hoặc '/player/[id]' nếu có trang chi tiết bài hát
+      }}
       style={[
         styles.container,
         isActive ? styles.activeBackground : styles.inactiveBackground,

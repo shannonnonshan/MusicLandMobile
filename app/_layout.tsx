@@ -1,14 +1,13 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { MusicProvider } from '@//contexts/MusicContext'; // <== IMPORT NÀY QUAN TRỌNG
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { MusicProvider } from '@/src/contexts/MusicContext'; // import MusicProvider
-import { useColorScheme } from '@/src/hooks/useColorScheme';
+import '../global.css';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -18,14 +17,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <MusicProvider>
+    <ThemeProvider value={DefaultTheme}>
+      <MusicProvider> {/* BỌC Ở ĐÂY */}
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
+        <StatusBar style="auto" />
       </MusicProvider>
-      <StatusBar style="auto" />
     </ThemeProvider>
   );
 }
