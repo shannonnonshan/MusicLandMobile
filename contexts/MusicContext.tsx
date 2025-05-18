@@ -16,6 +16,7 @@ export interface Song {
   duration: number;
   liked: boolean;
   thumbnail: string;
+  uri: string; // Thêm trường uri để lưu đường dẫn file âm thanh
 }
 
 interface MusicContextType {
@@ -27,6 +28,7 @@ interface MusicContextType {
   duration: number;
   currentTime: number;
   thumbnail: string;
+  uri: string;
   playSong: (song: Song) => void;
   pauseSong: () => void;
   playNextSong: () => void;
@@ -90,6 +92,43 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     };
   }, [sound]);
 
+  // Load and play sound when currentSong changes
+  useEffect(() => {
+    const loadAndPlay = async () => {
+      try {
+        if (sound) {
+          await sound.unloadAsync();
+          setSound(null);
+        }
+
+        if (currentSong) {
+          const { sound: newSound } = await Audio.Sound.createAsync(
+            { uri: currentSong.uri },
+            { shouldPlay: isPlaying, volume }
+          );
+
+          newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+          setSound(newSound);
+        }
+      } catch (error) {
+        toast({
+          title: 'Audio Load Error',
+          description: (error as Error).message,
+          variant: 'destructive',
+        });
+      }
+    };
+
+    loadAndPlay();
+  }, [currentSong]);
+
+  // Update volume on sound object when volume changes
+  useEffect(() => {
+    if (sound) {
+      sound.setVolumeAsync(volume);
+    }
+  }, [volume, sound]);
+
   const onPlaybackStatusUpdate = (status: any) => {
     if (!status.isLoaded) {
       if (status.error) {
@@ -116,36 +155,29 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   };
 
   const playSong = async (song: Song) => {
-    try {
+    if (!song) return;
+
+    if (currentSong && currentSong.id === song.id) {
       if (sound) {
-        await sound.unloadAsync();
-        sound.setOnPlaybackStatusUpdate(null);
-        setSound(null);
+        if (isPlaying) {
+          await sound.pauseAsync();
+          setIsPlaying(false);
+        } else {
+          await sound.playAsync();
+          setIsPlaying(true);
+        }
       }
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: `https://example.com/songs/${song.id}.mp3` }, // đổi url phù hợp
-        {
-          shouldPlay: true,
-          volume,
-        },
-        onPlaybackStatusUpdate
-      );
-      setSound(newSound);
+    } else {
       setCurrentSong(song);
-    } catch (error) {
-      toast({
-        title: 'Playback Error',
-        description:
-          'Could not play this song. This is a demo app without actual audio files.',
-        variant: 'destructive',
-      });
-      setIsPlaying(false);
+      setIsPlaying(true);
+      // Sound sẽ tự load và play ở useEffect phía trên
     }
   };
 
   const pauseSong = async () => {
     if (sound) {
       await sound.pauseAsync();
+      setIsPlaying(false);
     }
   };
 
@@ -172,18 +204,19 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    if (sound) {
-      sound.setVolumeAsync(volume);
-    }
-  }, [volume, sound]);
-
   const toggleLike = (songId: number) => {
-    setSongs((prevSongs) =>
-      prevSongs.map((song) =>
+    setSongs((prevSongs) => {
+      const updatedSongs = prevSongs.map((song) =>
         song.id === String(songId) ? { ...song, liked: !song.liked } : song
-      )
-    );
+      );
+
+      // Update currentSong nếu nó là bài được toggle
+      if (currentSong && currentSong.id === String(songId)) {
+        setCurrentSong(updatedSongs.find(song => Number(song.id) === songId) || null);
+      }
+
+      return updatedSongs;
+    });
   };
 
   return (
@@ -193,16 +226,17 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         currentSong,
         isPlaying,
         progress,
-        volume: volume * 100, // đổi lại cho UI 0-100
+        volume: volume * 100, // UI 0-100
         duration,
         currentTime,
         thumbnail: currentSong?.thumbnail || '',
+        uri: currentSong?.uri || '',
         playSong,
         pauseSong,
         playNextSong,
         playPreviousSong,
         seekTo,
-        setVolume: (val) => setVolume(val / 100), // nhận 0-100 map sang 0-1
+        setVolume: (val) => setVolume(val / 100), // UI 0-100 => 0-1
         toggleLike,
         formatTime,
       }}

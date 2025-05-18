@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //   thumbnail?: string; 
 // }
 
+// Danh sách nhạc mẫu có sẵn
 export const initialSongs: Song[] = [
   {
     id: "1",
@@ -20,7 +21,8 @@ export const initialSongs: Song[] = [
     album: "Starlight",
     duration: 237,
     liked: false,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/midnight-dreams.mp3",
   },
   {
     id: "2",
@@ -29,7 +31,8 @@ export const initialSongs: Song[] = [
     album: "Synthwave",
     duration: 198,
     liked: true,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/electric-waves.mp3",
   },
   {
     id: "3",
@@ -38,7 +41,8 @@ export const initialSongs: Song[] = [
     album: "Summer Days",
     duration: 224,
     liked: false,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/ocean-breeze.mp3",
   },
   {
     id: "4",
@@ -47,7 +51,8 @@ export const initialSongs: Song[] = [
     album: "Metropolis",
     duration: 185,
     liked: true,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/urban-jungle.mp3",
   },
   {
     id: "5",
@@ -56,7 +61,8 @@ export const initialSongs: Song[] = [
     album: "Nature's Call",
     duration: 246,
     liked: false,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/mountain-high.mp3",
   },
   {
     id: "6",
@@ -65,7 +71,8 @@ export const initialSongs: Song[] = [
     album: "Dusk to Dawn",
     duration: 213,
     liked: false,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/sunset-boulevard.mp3",
   },
   {
     id:" 7",
@@ -74,7 +81,8 @@ export const initialSongs: Song[] = [
     album: "Weather Patterns",
     duration: 274,
     liked: true,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/rainy-day.mp3",
   },
   {
     id: "8",
@@ -83,7 +91,8 @@ export const initialSongs: Song[] = [
     album: "After Hours",
     duration: 192,
     liked: false,
-    thumbnail : '../assets/images/MSlogo.png'
+    thumbnail : '../assets/images/MSlogo.png',
+    uri: "https://www.example.com/audio/neon-lights.mp3",
   }
 ];
 

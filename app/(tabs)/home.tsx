@@ -38,12 +38,18 @@ const HomePage = () => {
   ];
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100, backgroundColor: '#121212' }}>
+    <ScrollView
+      contentContainerStyle={{
+        padding: 16,
+        paddingBottom: 160, 
+        backgroundColor: '#121212',
+      }}
+    >
       {/* Header */}
       <Animated.View entering={FadeInDown.duration(500)}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
           <Headphones size={24} color="white" />
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', marginLeft: 8 }}>Melodify</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', marginLeft: 8 }}>Musicland</Text>
         </View>
       </Animated.View>
 

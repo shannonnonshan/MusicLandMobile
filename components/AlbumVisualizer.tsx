@@ -1,39 +1,65 @@
-import { motion } from 'framer-motion';
-
+import React, { useEffect } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
 interface AlbumVisualizerProps {
   isPlaying: boolean;
 }
 
 const AlbumVisualizer: React.FC<AlbumVisualizerProps> = ({ isPlaying }) => {
-  // Tạo mảng 12 thanh cho visualizer
-  const bars = Array.from({ length: 12 }, (_, i) => i);
+  const bars = Array.from({ length: 12 }, () => new Animated.Value(10));
+
+  useEffect(() => {
+    if (isPlaying) {
+      const animations = bars.map((bar, i) =>
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(bar, {
+              toValue: Math.random() * 80 + 10,
+              duration: 800 + Math.random() * 500,
+              useNativeDriver: false,
+            }),
+            Animated.timing(bar, {
+              toValue: 10,
+              duration: 800 + Math.random() * 500,
+              useNativeDriver: false,
+            }),
+          ]),
+        ),
+      );
+      Animated.stagger(50, animations).start();
+
+      return () => animations.forEach(anim => anim.stop());
+    } else {
+      bars.forEach(bar => bar.setValue(10));
+    }
+  }, [isPlaying]);
 
   return (
-    <div className="flex items-end justify-center h-16 space-x-1 mt-4">
-      {bars.map((bar) => (
-        <motion.div
-          key={bar}
-          className="tw-visualizer-bar tw-w-2"
-          initial={{ height: '10%' }}
-          animate={
-            isPlaying
-              ? {
-                  height: ['10%', `${Math.random() * 90 + 10}%`, '10%'],
-                  transition: {
-                    duration: 0.8 + Math.random() * 0.5,
-                    repeat: Infinity,
-                    repeatType: 'loop',
-                    ease: 'easeInOut',
-                    delay: bar * 0.05,
-                  },
-                }
-              : { height: '10%' }
-          }
+    <View style={styles.container}>
+      {bars.map((bar, index) => (
+        <Animated.View
+          key={index}
+          style={[styles.bar, { height: bars[index] }]}
         />
       ))}
-    </div>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    height: 64,
+    marginTop: 16,
+    gap: 4,
+  },
+  bar: {
+    width: 6,
+    backgroundColor: '#a78bfa', // màu tím
+    borderRadius: 2,
+  },
+});
 
 export default AlbumVisualizer;

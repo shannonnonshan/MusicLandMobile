@@ -4,6 +4,7 @@ import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
+
 interface MiniPlayerProps {
   bottomOffset?: number;
   bgColor?: string;
@@ -17,12 +18,10 @@ export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F',song}: MiniP
     song?.thumbnail || require('../assets/images/MSlogo.png')
   return (
     <TouchableOpacity
-      onPress={() => router.push('/music/now-playing')}
-      // onPress={() => router.push('/player')}
-    //   activeOpacity={0.7}
-       style={{
+      onPress={() => router.push('/player')}
+      style={{
         position: 'absolute',
-        bottom: bottomOffset, 
+        bottom: bottomOffset,
         left: 0,
         right: 0,
         zIndex: 100,

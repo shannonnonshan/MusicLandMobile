@@ -18,7 +18,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <MusicProvider> {/* BỌC Ở ĐÂY */}
+      <MusicProvider> 
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />

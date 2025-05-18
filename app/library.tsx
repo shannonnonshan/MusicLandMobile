@@ -1,15 +1,16 @@
 import SongCard from '@/components/SongCard';
 import { useMusicContext } from '@/contexts/MusicContext';
+import { useRouter } from 'expo-router';
 import { Heart, Library, Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const LibraryPage = () => {
-  const { songs } = useMusicContext();
+  const { songs, playSong } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'liked'>('all');
+  const router = useRouter();
 
-  // Filter songs based on search query and active tab
   const filteredSongs = songs.filter(song => {
     const matchesSearch =
       song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -77,7 +78,15 @@ const LibraryPage = () => {
         <FlatList
           data={filteredSongs}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item, index }) => <SongCard song={item} index={index} />}
+          renderItem={({ item, index }) => (
+            <SongCard
+              song={item}
+              index={index}
+              onPress={() => {
+                playSong(item);
+              }}
+            />
+          )}
           ItemSeparatorComponent={() => <View className="h-1" />}
           showsVerticalScrollIndicator={false}
         />
