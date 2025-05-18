@@ -21,7 +21,7 @@ export async function searchTracks(query) {
   const token = await getAccessToken();
 
   const res = await axios.get(
-    `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=2`,
+    `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=15`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

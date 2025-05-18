@@ -21,7 +21,7 @@ export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F',song}: MiniP
       // onPress={() => router.push('/player')}
     //   activeOpacity={0.7}
        style={{
-        // position: 'absolute',
+        position: 'absolute',
         bottom: bottomOffset, 
         left: 0,
         right: 0,

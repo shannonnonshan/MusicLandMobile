@@ -1,4 +1,4 @@
-import { MiniPlayer } from '@/components/MiniPlayer';
+import SongCard from '@/components/SongCard';
 import type { Song } from '@/contexts/MusicContext';
 import { useEffect, useState } from 'react';
 import {
@@ -35,7 +35,7 @@ export default function TabSearchScreen() {
               title: track.name,
               artist: track.artists?.[0]?.name || 'Unknown Artist',
               album: track.album?.name || 'Unknown Album',
-              duration: track.duration_ms || 0,
+              duration: Math.floor(track.duration_ms / 1000) || 0,
               liked: false,
               thumbnail: track.album?.images?.[0]?.url || '',
             }));
@@ -80,13 +80,8 @@ export default function TabSearchScreen() {
 
       {/* Kết quả tìm kiếm */}
       <ScrollView>
-        {tracks.map((track) => (
-          <MiniPlayer
-            key={track.id}
-            bottomOffset={0}
-            bgColor="#222"
-            song={track}
-          />
+        {tracks.map((track, index) => (
+          <SongCard key={track.id} song={track} index={index} />
         ))}
       </ScrollView>
     </SafeAreaView>
