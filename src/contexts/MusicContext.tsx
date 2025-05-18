@@ -2,22 +2,11 @@ import { useToast } from '@/src/components/ui/use-toast';
 import {
   initialSongs,
   loadSongsFromStorage,
-  saveSongsToStorage,
+  saveSongsToStorage
 } from '@/src/lib/musicStorage';
 import { formatTime } from '@/src/lib/timeUtils';
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import TrackPlayer, {
-  Capability,
-  Event,
-  State,
-  Track,
-} from 'react-native-track-player';
+import { Audio } from 'expo-av';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export interface Song {
   id: number;
@@ -41,9 +30,9 @@ interface MusicContextType {
   playNextSong: () => void;
   playPreviousSong: () => void;
   seekTo: (percent: number) => void;
-  setVolume: React.Dispatch<React.SetStateAction<number>>;
-  toggleLike: (songId: number) => void;
-  formatTime: (seconds: number) => string;
+  setVolume: (value: number) => void;
+  toggleLike: (id: number) => void;
+  formatTime: (time: number) => string;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -57,36 +46,19 @@ export const useMusicContext = (): MusicContextType => {
 };
 
 interface MusicProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const { toast } = useToast();
-
   const [songs, setSongs] = useState<Song[]>([]);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState(80);
+  const [volume, setVolume] = useState(0.8); // expo-av volume 0 to 1
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-
-  useEffect(() => {
-    const setup = async () => {
-      await TrackPlayer.setupPlayer();
-      await TrackPlayer.updateOptions({
-        capabilities: [
-        Capability?.Play,
-        Capability?.Pause,
-        Capability?.SkipToNext,
-        Capability?.SkipToPrevious,
-        Capability?.SeekTo,
-      ],
-      });
-
-    };
-    setup();
-  }, []);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -107,31 +79,56 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     }
   }, [songs]);
 
-  // Event listener to update isPlaying state
   useEffect(() => {
-    const listener = TrackPlayer.addEventListener(
-      Event.PlaybackState,
-      ({ state }) => {
-        setIsPlaying(state === State.Playing);
+    // Cleanup sound on unmount
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
       }
+    };
+  }, [sound]);
+
+  const onPlaybackStatusUpdate = (status: any) => {
+    if (!status.isLoaded) {
+      if (status.error) {
+        toast({
+          title: 'Playback Error',
+          description: status.error,
+          variant: 'destructive',
+        });
+      }
+      return;
+    }
+    setIsPlaying(status.isPlaying);
+    setCurrentTime(status.positionMillis / 1000);
+    setDuration(status.durationMillis ? status.durationMillis / 1000 : 0);
+    setProgress(
+      status.durationMillis
+        ? (status.positionMillis / status.durationMillis) * 100
+        : 0
     );
-    return () => listener.remove();
-  }, []);
+
+    if (status.didJustFinish && !status.isLooping) {
+      playNextSong();
+    }
+  };
 
   const playSong = async (song: Song) => {
     try {
-      const track: Track = {
-        id: `${song.id}`,
-        url: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3`,
-        title: song.title,
-        artist: song.artist,
-        duration: song.duration,
-      };
-
-      await TrackPlayer.reset();
-      await TrackPlayer.add([track]);
-      await TrackPlayer.play();
-
+      if (sound) {
+        await sound.unloadAsync();
+        sound.setOnPlaybackStatusUpdate(null);
+        setSound(null);
+      }
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: `https://example.com/songs/${song.id}.mp3` }, // đổi url phù hợp
+        {
+          shouldPlay: true,
+          volume,
+        },
+        onPlaybackStatusUpdate
+      );
+      setSound(newSound);
       setCurrentSong(song);
     } catch (error) {
       toast({
@@ -145,29 +142,39 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   };
 
   const pauseSong = async () => {
-    await TrackPlayer.pause();
+    if (sound) {
+      await sound.pauseAsync();
+    }
   };
 
-  const playNextSong = async () => {
+  const playNextSong = useCallback(async () => {
     if (!currentSong || songs.length === 0) return;
-    const currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+    const currentIndex = songs.findIndex((s) => s.id === currentSong.id);
     const nextIndex = (currentIndex + 1) % songs.length;
     await playSong(songs[nextIndex]);
-  };
+  }, [currentSong, songs]);
 
-  const playPreviousSong = async () => {
+  const playPreviousSong = useCallback(async () => {
     if (!currentSong || songs.length === 0) return;
-    const currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+    const currentIndex = songs.findIndex((s) => s.id === currentSong.id);
     const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
     await playSong(songs[prevIndex]);
-  };
+  }, [currentSong, songs]);
 
   const seekTo = async (percent: number) => {
-    const seekTime = (percent / 100) * duration;
-    await TrackPlayer.seekTo(seekTime);
-    setProgress(percent);
-    setCurrentTime(seekTime);
+    if (sound && duration > 0) {
+      const seekPosition = (percent / 100) * duration * 1000;
+      await sound.setPositionAsync(seekPosition);
+      setProgress(percent);
+      setCurrentTime(seekPosition / 1000);
+    }
   };
+
+  useEffect(() => {
+    if (sound) {
+      sound.setVolumeAsync(volume);
+    }
+  }, [volume, sound]);
 
   const toggleLike = (songId: number) => {
     setSongs((prevSongs) =>
@@ -177,19 +184,6 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     );
   };
 
-  // Update progress every second
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const position = await TrackPlayer.getPosition();
-      const total = await TrackPlayer.getDuration();
-      setCurrentTime(position);
-      setDuration(total);
-      setProgress((position / (total || 1)) * 100);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <MusicContext.Provider
       value={{
@@ -197,7 +191,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         currentSong,
         isPlaying,
         progress,
-        volume,
+        volume: volume * 100, // đổi lại cho UI 0-100
         duration,
         currentTime,
         playSong,
@@ -205,7 +199,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         playNextSong,
         playPreviousSong,
         seekTo,
-        setVolume,
+        setVolume: (val) => setVolume(val / 100), // nhận 0-100 map sang 0-1
         toggleLike,
         formatTime,
       }}

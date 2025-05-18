@@ -1,103 +1,97 @@
-
 import SongCard from '@/src/components/SongCard';
 import { useMusicContext } from '@/src/contexts/MusicContext';
-import { motion } from 'framer-motion';
-import { Heart, Library, Search } from 'lucide-react';
+import { Heart, Library, Search } from 'lucide-react-native';
 import { useState } from 'react';
+import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const LibraryPage = () => {
   const { songs } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
-  
+  const [activeTab, setActiveTab] = useState<'all' | 'liked'>('all');
+
   // Filter songs based on search query and active tab
   const filteredSongs = songs.filter(song => {
-    const matchesSearch = 
+    const matchesSearch =
       song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       song.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
       song.album.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
     if (activeTab === 'liked') {
       return matchesSearch && song.liked;
     }
-    
     return matchesSearch;
   });
-  
+
   return (
-    <div className="px-4 py-6 pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-2xl font-bold mb-6 flex items-center">
-          <Library className="mr-2" /> Your Library
-        </h1>
-      </motion.div>
-      
+    <View className="flex-1 bg-gray-50 px-4 py-6 pb-20">
+      {/* Header */}
+      <View className="flex-row items-center mb-6">
+        <Library size={24} color="#4B5563" className="mr-2" />
+        <Text className="text-2xl font-bold text-gray-900">Your Library</Text>
+      </View>
+
       {/* Search Bar */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-        <input
-          type="text"
-          placeholder="Search songs, artists, albums..."
-          className="w-full bg-secondary/50 border-border rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+      <View className="relative mb-6">
+        <Search
+          size={18}
+          color="#9CA3AF"
+          style={{ position: 'absolute', left: 12, top: '50%', marginTop: -9 }}
         />
-      </div>
-      
+        <TextInput
+          placeholder="Search songs, artists, albums..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          className="bg-gray-200 border border-gray-300 rounded-full py-2 pl-10 pr-4 text-gray-900"
+          placeholderTextColor="#6B7280"
+        />
+      </View>
+
       {/* Tabs */}
-      <div className="flex space-x-4 mb-6 border-b border-border">
-        <button
-          className={`pb-2 px-1 relative ${activeTab === 'all' ? 'text-primary' : 'text-muted-foreground'}`}
-          onClick={() => setActiveTab('all')}
+      <View className="flex-row space-x-4 mb-6 border-b border-gray-300">
+        <TouchableOpacity
+          className={`pb-2 px-1 ${
+            activeTab === 'all' ? 'border-b-2 border-purple-600' : ''
+          }`}
+          onPress={() => setActiveTab('all')}
         >
-          All Songs
-          {activeTab === 'all' && (
-            <motion.div 
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-              layoutId="tabIndicator"
-            />
-          )}
-        </button>
-        <button
-          className={`pb-2 px-1 relative flex items-center ${activeTab === 'liked' ? 'text-primary' : 'text-muted-foreground'}`}
-          onClick={() => setActiveTab('liked')}
+          <Text className={activeTab === 'all' ? 'text-purple-600 font-medium' : 'text-gray-500 font-medium'}>
+            All Songs
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={`pb-2 px-1 flex-row items-center ${
+            activeTab === 'liked' ? 'border-b-2 border-purple-600' : ''
+          }`}
+          onPress={() => setActiveTab('liked')}
         >
-          <Heart className="mr-1" size={16} /> Favorites
-          {activeTab === 'liked' && (
-            <motion.div 
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-              layoutId="tabIndicator"
-            />
-          )}
-        </button>
-      </div>
-      
+          <Heart size={16} color={activeTab === 'liked' ? '#7C3AED' : '#6B7280'} className="mr-1" />
+          <Text className={activeTab === 'liked' ? 'text-purple-600 font-medium' : 'text-gray-500 font-medium'}>
+            Favorites
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Song List */}
-      <div className="space-y-1">
-        {filteredSongs.length > 0 ? (
-          filteredSongs.map((song, index) => (
-            <SongCard key={song.id} song={song} index={index} />
-          ))
-        ) : (
-          <motion.div 
-            className="text-center py-10 text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <p>No songs found</p>
-            {searchQuery && (
-              <p className="text-sm mt-2">
-                Try adjusting your search or filters
-              </p>
-            )}
-          </motion.div>
-        )}
-      </div>
-    </div>
+      {filteredSongs.length > 0 ? (
+        <FlatList
+          data={filteredSongs}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item, index }) => <SongCard song={item} index={index} />}
+          ItemSeparatorComponent={() => <View className="h-1" />}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <View className="py-10 items-center">
+          <Text className="text-gray-500 text-center text-base">No songs found</Text>
+          {searchQuery.length > 0 && (
+            <Text className="text-gray-400 text-sm mt-2 text-center">
+              Try adjusting your search or filters
+            </Text>
+          )}
+        </View>
+      )}
+    </View>
   );
 };
 

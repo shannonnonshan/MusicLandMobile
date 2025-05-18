@@ -1,10 +1,7 @@
-
 import AlbumVisualizer from '@/src/components/AlbumVisualizer';
-import { Button } from '@/src/components/ui/button';
 import { Slider } from '@/src/components/ui/slider';
 import { useMusicContext } from '@/src/contexts/MusicContext';
-import { cn } from '@/src/lib/utils';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'expo-router'; // thay useNavigation thành useRouter
 import {
   ChevronDown,
   Heart,
@@ -14,189 +11,148 @@ import {
   Shuffle,
   SkipBack,
   SkipForward,
-  Volume2
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+  Volume2,
+} from 'lucide-react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 const PlayerPage = () => {
-  const navigate = useNavigate();
-  const { 
-    currentSong, 
-    isPlaying, 
-    progress, 
+  const router = useRouter();  // Dùng router từ expo-router
+  const {
+    currentSong,
+    isPlaying,
+    progress,
     volume,
     currentTime,
     duration,
-    playSong, 
-    playNextSong, 
-    playPreviousSong, 
+    playSong,
+    playNextSong,
+    playPreviousSong,
     seekTo,
     setVolume,
     toggleLike,
-    formatTime
+    formatTime,
   } = useMusicContext();
 
   if (!currentSong) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen p-6 text-center">
-        <h2 className="text-2xl font-bold mb-4">No song selected</h2>
-        <p className="text-muted-foreground mb-6">Select a song from your library to start playing</p>
-        <Button onClick={() => navigate('/library')}>
-          Go to Library
-        </Button>
-      </div>
+      <View className="flex-1 justify-center items-center p-6 bg-black">
+        <Text className="text-white text-2xl font-bold mb-4">No song selected</Text>
+        <Text className="text-gray-400 mb-6 text-center">
+          Select a song from your library to start playing
+        </Text>
+        <TouchableOpacity
+          className="bg-purple-700 px-4 py-2 rounded"
+          onPress={() => router.push('/library')}  // dùng router.push thay navigate
+        >
+          <Text className="text-white text-center">Go to Library</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   return (
-    <div className="min-h-screen music-gradient px-4 py-6 pb-20 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute -left-20 top-40 w-40 h-40 rounded-full bg-purple-400 opacity-20 blur-xl"></div>
-      <div className="absolute right-10 bottom-40 w-60 h-60 rounded-full bg-blue-400 opacity-20 blur-xl"></div>
-      
+    <View className="flex-1 bg-gradient-to-b from-purple-900 via-indigo-900 to-black px-4 py-6 pb-20 relative">
       {/* Header */}
-      <div className="flex items-center mb-8">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white"
-          onClick={() => navigate(-1)}
+      <View className="flex-row items-center mb-8">
+        <TouchableOpacity
+          className="p-2"
+          onPress={() => router.back()}  // dùng router.back() thay navigation.goBack()
         >
-          <ChevronDown size={24} />
-        </Button>
-        <div className="flex-1 text-center">
-          <h1 className="text-lg font-medium">Now Playing</h1>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="text-white"
-          onClick={() => toggleLike(currentSong.id)}
+          <ChevronDown size={24} color="white" />
+        </TouchableOpacity>
+        <View className="flex-1 items-center">
+          <Text className="text-white text-lg font-medium">Now Playing</Text>
+        </View>
+        <TouchableOpacity
+          className="p-2"
+          onPress={() => toggleLike(currentSong.id)}
         >
-          <Heart 
-            size={24} 
-            className={cn(currentSong.liked && "fill-red-500 text-red-500")} 
+          <Heart
+            size={24}
+            color={currentSong.liked ? 'red' : 'white'}
+            fill={currentSong.liked ? 'red' : 'none'}
           />
-        </Button>
-      </div>
-      
+        </TouchableOpacity>
+      </View>
+
       {/* Album Cover */}
-      <motion.div 
-        className="w-64 h-64 mx-auto rounded-lg overflow-hidden shadow-xl album-shadow mb-8"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      >
-        <div className={cn(
-          "w-full h-full rounded-lg overflow-hidden",
-          isPlaying && "album-rotate"
-        )}>
-          <img  alt={`${currentSong.album} album cover`} className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1573247352896-dd8ee4f547ce" />
-        </div>
-      </motion.div>
-      
+      <View className="w-64 h-64 mx-auto rounded-lg overflow-hidden shadow-lg mb-8">
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1573247352896-dd8ee4f547ce' }}
+          className="w-full h-full rounded-lg"
+          resizeMode="cover"
+        />
+      </View>
+
       {/* Song Info */}
-      <div className="text-center mb-8">
-        <AnimatePresence mode="wait">
-          <motion.h2 
-            key={`title-${currentSong.id}`}
-            className="text-2xl font-bold mb-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {currentSong.title}
-          </motion.h2>
-        </AnimatePresence>
-        
-        <AnimatePresence mode="wait">
-          <motion.p 
-            key={`artist-${currentSong.id}`}
-            className="text-lg text-white/80"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            {currentSong.artist}
-          </motion.p>
-        </AnimatePresence>
-      </div>
-      
-      {/* Audio Visualizer */}
+      <View className="items-center mb-8">
+        <Text className="text-white text-2xl font-bold mb-2">{currentSong.title}</Text>
+        <Text className="text-white opacity-70 text-lg">{currentSong.artist}</Text>
+      </View>
+
+      {/* Album Visualizer */}
       <AlbumVisualizer isPlaying={isPlaying} />
-      
+
       {/* Progress Bar */}
-      <div className="mb-2 mt-6">
-        <Slider 
-          value={[progress]} 
-          max={100} 
+      <View className="mb-2 mt-6">
+        <Slider
+          value={progress}
+          maximumValue={100}
+          minimumValue={0}
           step={0.1}
-          onValueChange={(value) => seekTo(value[0])}
-          className="mb-2"
+          onValueChange={(value) => seekTo(value)}
+          minimumTrackTintColor="#7c3aed"
+          maximumTrackTintColor="#fff"
+          thumbTintColor="#a78bfa"
         />
-        <div className="flex justify-between text-sm text-white/70">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      </div>
-      
+        <View className="flex-row justify-between">
+          <Text className="text-white opacity-70 text-sm">{formatTime(currentTime)}</Text>
+          <Text className="text-white opacity-70 text-sm">{formatTime(duration)}</Text>
+        </View>
+      </View>
+
       {/* Controls */}
-      <div className="flex justify-center items-center space-x-6 mb-8">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white hover:text-white/80 hover:bg-white/10"
+      <View className="flex-row justify-center items-center space-x-6 mb-8">
+        <TouchableOpacity>
+          <Shuffle size={20} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={playPreviousSong}>
+          <SkipBack size={24} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-16 h-16 rounded-full bg-white justify-center items-center"
+          onPress={() => playSong(currentSong)}
         >
-          <Shuffle size={20} />
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white hover:text-white/80 hover:bg-white/10"
-          onClick={playPreviousSong}
-        >
-          <SkipBack size={24} />
-        </Button>
-        
-        <Button 
-          className="w-16 h-16 rounded-full bg-white text-purple-900 hover:bg-white/90 player-controls"
-          onClick={() => playSong(currentSong)}
-        >
-          {isPlaying ? <Pause size={30} /> : <Play size={30} />}
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white hover:text-white/80 hover:bg-white/10"
-          onClick={playNextSong}
-        >
-          <SkipForward size={24} />
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white hover:text-white/80 hover:bg-white/10"
-        >
-          <Repeat size={20} />
-        </Button>
-      </div>
-      
+          {isPlaying ? <Pause size={30} color="#6b21a8" /> : <Play size={30} color="#6b21a8" />}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={playNextSong}>
+          <SkipForward size={24} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <Repeat size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+
       {/* Volume Control */}
-      <div className="flex items-center space-x-4 px-4">
-        <Volume2 size={20} className="text-white/80" />
-        <Slider 
-          value={[volume]} 
-          max={100} 
+      <View className="flex-row items-center space-x-4 px-4">
+        <Volume2 size={20} color="rgba(255,255,255,0.8)" />
+        <Slider
+          value={volume}
+          maximumValue={100}
+          minimumValue={0}
           step={1}
-          onValueChange={(value) => setVolume(value[0])}
+          onValueChange={(value) => setVolume(value)}
+          minimumTrackTintColor="#7c3aed"
+          maximumTrackTintColor="#fff"
+          thumbTintColor="#a78bfa"
+          style={{ flex: 1 }}
         />
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
