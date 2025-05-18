@@ -6,14 +6,14 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 interface MiniPlayerProps {
   bottomOffset?: number;
   bgColor?: string;
+  title?: string;
+  artist?: string;
+  thumbnail?: any;
 }
-export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F' }: MiniPlayerProps) {
+export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F',
+  title = 'Lạc Trôi',artist='Sơn Tùng M-TP', thumbnail= require('../assets/images/MSlogo.png')}: MiniPlayerProps) {
   const router = useRouter();
-  const currentSong = {
-    title: 'Lạc Trôi',
-    artist: 'Sơn Tùng M-TP',
-    thumbnail: require('../assets/images/MSlogo.png'),
-  };
+  
   return (
     <TouchableOpacity
       onPress={() => router.push('/music/now-playing')}
@@ -34,15 +34,15 @@ export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F' }: MiniPlaye
       }}
     >
       <Image
-        source={currentSong.thumbnail}
+        source={thumbnail}
         className="w-12 h-12 rounded-md mr-4"
       />
       <View className="flex-1">
         <Text className="text-white font-semibold" numberOfLines={1}>
-          {currentSong.title}
+          {title}
         </Text>
         <Text className="text-gray-500 text-md" numberOfLines={1}>
-          {currentSong.artist}
+          {artist}
         </Text>
       </View>
       <Entypo name="controller-play" size={28} color="#fff" />
