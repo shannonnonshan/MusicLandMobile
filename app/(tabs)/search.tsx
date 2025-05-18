@@ -1,5 +1,6 @@
 import { MiniPlayer } from '@/components/MiniPlayer';
-import React, { useEffect, useState } from 'react';
+import type { Song } from '@/contexts/MusicContext';
+import { useEffect, useState } from 'react';
 import {
   Image,
   Platform,
@@ -13,17 +14,10 @@ import {
 } from 'react-native';
 import { searchTracks } from '../../axios/sporitfy.api';
 import '../../global.css';
-interface SpotifyTrack {
-  id: string;
-  name: string;
-  artists: { name: string }[];
-  album: {
-    images: { url: string }[];
-  };
-}
+
 export default function TabSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
+  const [tracks, setTracks] = useState<Song[]>([]);
 
   
   useEffect(() => {
@@ -33,22 +27,30 @@ export default function TabSearchScreen() {
   }
 
   const delayDebounce = setTimeout(() => {
-    searchTracks(searchQuery)
-      .then((res) => {
-        console.log('Raw Spotify response:', JSON.stringify(res, null, 2));
-        if (Array.isArray(res?.tracks?.items)) {
-          setTracks(res.tracks.items);
-        } else {
-          console.log('Invalid response:', res);
-        }
-      })
-      .catch((err) => {
-        console.error('Search error:', err);
-      });
-  }, 500);
+      searchTracks(searchQuery)
+        .then((res) => {
+          if (Array.isArray(res?.tracks?.items)) {
+            const mappedTracks: Song[] = res.tracks.items.map((track: any) => ({
+              id: track.id,
+              title: track.name,
+              artist: track.artists?.[0]?.name || 'Unknown Artist',
+              album: track.album?.name || 'Unknown Album',
+              duration: track.duration_ms || 0,
+              liked: false,
+              thumbnail: track.album?.images?.[0]?.url || '',
+            }));
+            setTracks(mappedTracks);
+          } else {
+            console.log('Invalid response:', res);
+          }
+        })
+        .catch((err) => {
+          console.error('Search error:', err);
+        });
+    }, 500);
 
-  return () => clearTimeout(delayDebounce);
-}, [searchQuery]);
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -83,8 +85,7 @@ export default function TabSearchScreen() {
             key={track.id}
             bottomOffset={0}
             bgColor="#222"
-            title={track.name}
-            artist={track.artists?.[0]?.name || 'Unknown Artist'}
+            song={track}
           />
         ))}
       </ScrollView>

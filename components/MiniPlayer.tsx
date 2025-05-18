@@ -1,4 +1,5 @@
-// components/MiniPlayer.tsx
+
+import type { Song } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -6,20 +7,21 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 interface MiniPlayerProps {
   bottomOffset?: number;
   bgColor?: string;
-  title?: string;
-  artist?: string;
-  thumbnail?: any;
+  song?: Song;
 }
-export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F',
-  title = 'Lạc Trôi',artist='Sơn Tùng M-TP', thumbnail= require('../assets/images/MSlogo.png')}: MiniPlayerProps) {
+export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F',song}: MiniPlayerProps) {
   const router = useRouter();
-  
+  const title = song?.title || 'Lạc Trôi';
+  const artist = song?.artist || 'Sơn Tùng M-TP';
+  const thumbnail =
+    song?.thumbnail || require('../assets/images/MSlogo.png')
   return (
     <TouchableOpacity
       onPress={() => router.push('/music/now-playing')}
+      // onPress={() => router.push('/player')}
     //   activeOpacity={0.7}
        style={{
-        position: 'absolute',
+        // position: 'absolute',
         bottom: bottomOffset, 
         left: 0,
         right: 0,
