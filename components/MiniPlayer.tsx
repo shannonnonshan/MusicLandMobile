@@ -1,26 +1,26 @@
-
+import { useMusicContext } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+
 interface MiniPlayerProps {
   bottomOffset?: number;
   bgColor?: string;
 }
+
 export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F' }: MiniPlayerProps) {
   const router = useRouter();
-  const currentSong = {
-    title: 'Lạc Trôi',
-    artist: 'Sơn Tùng M-TP',
-    thumbnail: require('../assets/images/MSlogo.png'),
-  };
+  const { currentSong } = useMusicContext();
+
+  // Không hiển thị MiniPlayer nếu chưa có bài hát
+  if (!currentSong) return null;
+
   return (
     <TouchableOpacity
-      onPress={() => router.push('/music/now-playing')}
-      // onPress={() => router.push('/player')}
-    //   activeOpacity={0.7}
-       style={{
+      onPress={() => router.push('/player')}
+      style={{
         position: 'absolute',
-        bottom: bottomOffset, 
+        bottom: bottomOffset,
         left: 0,
         right: 0,
         zIndex: 100,
@@ -33,15 +33,15 @@ export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F' }: MiniPlaye
         marginHorizontal: 2,
       }}
     >
-      <Image
-        source={currentSong.thumbnail}
-        className="w-12 h-12 rounded-md mr-4"
-      />
-      <View className="flex-1">
-        <Text className="text-white font-semibold" numberOfLines={1}>
-          {currentSong.title}
+      <View style={{ flex: 1 }}>
+         <Image
+            source={{ uri: 'https://images.unsplash.com/photo-1664724195484-826ea9ee26a3' }}
+            className="w-10 h-10 rounded-md"
+          />
+        <Text style={{ color: 'white', fontWeight: '600' }} numberOfLines={1}>
+          {currentSong.title} ||
         </Text>
-        <Text className="text-gray-500 text-md" numberOfLines={1}>
+        <Text style={{ color: '#ccc' }} numberOfLines={1}>
           {currentSong.artist}
         </Text>
       </View>

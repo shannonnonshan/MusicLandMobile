@@ -1,7 +1,7 @@
 import AlbumVisualizer from '@/components/AlbumVisualizer';
 import { Slider } from '@/components/ui/slider';
 import { useMusicContext } from '@/contexts/MusicContext';
-import { useRouter } from 'expo-router'; // thay useNavigation thành useRouter
+import { useRouter } from 'expo-router';
 import {
   ChevronDown,
   Heart,
@@ -33,7 +33,7 @@ const PlayerPage = () => {
     formatTime,
   } = useMusicContext();
 
-  
+  console.log(currentSong);
   if (!currentSong) {
     return (
       <View className="flex-1 justify-center items-center p-6 bg-black">
@@ -52,7 +52,7 @@ const PlayerPage = () => {
   }
 
   return (
-    <View className="flex-1 bg-gradient-to-b from-purple-900 via-indigo-900 to-black px-4 py-6 pb-20 relative">
+    <View className="flex-1 bg-black from-purple-900 via-indigo-900 to-black px-4 py-6 pb-20 relative">
       {/* Header */}
       <View className="flex-row items-center mb-8">
         <TouchableOpacity
@@ -70,7 +70,7 @@ const PlayerPage = () => {
         >
           <Heart
             size={24}
-            color={currentSong.liked ? 'red' : 'white'}
+            color={currentSong.liked ? 'red' : '#999'}
             fill={currentSong.liked ? 'red' : 'none'}
           />
         </TouchableOpacity>
@@ -146,7 +146,7 @@ const PlayerPage = () => {
           maximumValue={100}
           minimumValue={0}
           step={1}
-          onValueChange={(value) => setVolume(value)}
+          onSlidingComplete={(value) => setVolume(value)}
           minimumTrackTintColor="#7c3aed"
           maximumTrackTintColor="#fff"
           thumbTintColor="#a78bfa"

@@ -1,27 +1,23 @@
 import type { Song } from '@/contexts/MusicContext';
 import { useMusicContext } from '@/contexts/MusicContext';
-import { useRouter } from 'expo-router';
 import { Heart, Pause, Play } from 'lucide-react-native';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-
 type SongCardProps = {
   song: Song;
   index: number;
+  onPress: () => void;
 };
 
-const SongCard: React.FC<SongCardProps> = ({ song, index }) => {
-  const { currentSong, isPlaying, playSong, toggleLike, formatTime } = useMusicContext();
-  const router = useRouter();
+const SongCard: React.FC<SongCardProps> = ({ song, index, onPress }) => {
+  const { currentSong, isPlaying, toggleLike, formatTime } = useMusicContext();
+
   const isActive = currentSong && currentSong.id === song.id;
 
   return (
     <TouchableOpacity
-      onPress={() => {
-        playSong(song)
-        router.push(`/player?$(song.id)`); // hoặc '/player/[id]' nếu có trang chi tiết bài hát
-      }}
+      onPress={onPress}
       style={[
         styles.container,
         isActive ? styles.activeBackground : styles.inactiveBackground,
@@ -46,7 +42,7 @@ const SongCard: React.FC<SongCardProps> = ({ song, index }) => {
       <View style={styles.controls}>
         <TouchableOpacity
           onPress={(e) => {
-            e.stopPropagation && e.stopPropagation();
+            e.stopPropagation?.();
             toggleLike(song.id);
           }}
         >
@@ -65,7 +61,11 @@ const SongCard: React.FC<SongCardProps> = ({ song, index }) => {
             isActive && isPlaying ? styles.playingButton : styles.pausedButton,
           ]}
         >
-          {isActive && isPlaying ? <Pause size={16} color="white" /> : <Play size={16} color="#6b21a8" />}
+          {isActive && isPlaying ? (
+            <Pause size={16} color="white" />
+          ) : (
+            <Play size={16} color="#6b21a8" />
+          )}
         </View>
       </View>
     </TouchableOpacity>

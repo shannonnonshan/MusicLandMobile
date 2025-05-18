@@ -47,8 +47,9 @@ export default function TabSearchScreen() {
         {[...Array(30)].map((_, i) => (
           <MiniPlayer
           key={i}
-          bottomOffset={0}
-            bgColor="#222"/>
+          // bottomOffset={0}
+          //   bgColor="#222"/>
+          />
         ))}
       </ScrollView>
     </SafeAreaView>
