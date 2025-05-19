@@ -4,9 +4,6 @@ import * as Font from 'expo-font';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-export const options = {
-  headerShown: false,
-};
 
 const loadFonts = () =>
   Font.loadAsync({
@@ -62,7 +59,13 @@ I'd wanna be next to you`}
       </ScrollView>
       <View className="h-[66px] pb-2 relative mb-3">
 
-        <Pressable onPress={() => router.back()} className="absolute left-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
+        <Pressable onPress={() => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.push('/home'); // fallback về Home nếu không quay lại được
+    }
+  }} className="absolute left-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
           <Entypo  name="chevron-small-left" size={20} color="white" />
         </Pressable>
 

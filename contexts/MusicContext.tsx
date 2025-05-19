@@ -18,6 +18,13 @@ export interface Song {
   thumbnail: string;
   uri: string; // Thêm trường uri để lưu đường dẫn file âm thanh
 }
+export interface Album {
+  id: string;
+  title: string;
+  artist: string;
+  thumbnail: string;
+  songs: Song[];
+}
 
 interface MusicContextType {
   songs: Song[];
@@ -197,7 +204,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
 
   const seekTo = async (percent: number) => {
     if (sound && duration > 0) {
-      const seekPosition = (percent / 100) * duration * 1000;
+      const seekPosition = (percent / 100) * 30 * 1000;
       await sound.setPositionAsync(seekPosition);
       setProgress(percent);
       setCurrentTime(seekPosition / 1000);
