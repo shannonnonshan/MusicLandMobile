@@ -18,6 +18,13 @@ export interface Song {
   thumbnail: string;
   uri: string; // Thêm trường uri để lưu đường dẫn file âm thanh
 }
+export interface Album {
+  id: string;
+  title: string;
+  artist: string;
+  thumbnail: string;
+  songs: Song[];
+}
 
 interface MusicContextType {
   songs: Song[];
