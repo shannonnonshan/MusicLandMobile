@@ -30,7 +30,7 @@ const HomePage = () => {
   const { songs = [], playSong } = useMusicContext();
 
   const recentSongs = songs.slice(0, 4);
-
+  
   const featuredPlaylists = [
     { id: 1, name: 'Top Hits', songCount: 20, colors: ['#7C3AED', '#3B82F6'] },
     { id: 2, name: 'Chill Vibes', songCount: 15, colors: ['#22C55E', '#14B8A6'] },
@@ -126,7 +126,8 @@ const HomePage = () => {
           Featured Playlists
         </Text>
       </View>
-      {featuredPlaylists.map((playlist, index) => (
+      <View>
+        {featuredPlaylists.map((playlist, index) => (
         <Animated.View
           key={playlist.id}
           entering={SlideInLeft.delay(500 + index * 100)}
@@ -161,6 +162,8 @@ const HomePage = () => {
           </TouchableOpacity>
         </Animated.View>
       ))}
+      </View>
+      
     </ScrollView>
   );
 };

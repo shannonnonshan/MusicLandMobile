@@ -8,7 +8,7 @@ interface MiniPlayerProps {
   bgColor?: string;
 }
 
-export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F' }: MiniPlayerProps) {
+export function MiniPlayer({ bottomOffset = 75, bgColor = '#F57D1F' }: MiniPlayerProps) {
   const router = useRouter();
   const { currentSong } = useMusicContext();
 
@@ -31,21 +31,25 @@ export function MiniPlayer({ bottomOffset = 98, bgColor = '#F57D1F' }: MiniPlaye
         borderTopWidth: 1,
         borderRadius: 8,
         marginHorizontal: 2,
+        marginBottom: 0
       }}
     >
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
          <Image
             source={{ uri: 'https://images.unsplash.com/photo-1664724195484-826ea9ee26a3' }}
-            className="w-10 h-10 rounded-md"
+            className="w-10 h-10 rounded-md mr-2"
           />
-        <Text style={{ color: 'white', fontWeight: '600' }} numberOfLines={1}>
-          {currentSong.title} ||
-        </Text>
-        <Text style={{ color: '#ccc' }} numberOfLines={1}>
-          {currentSong.artist}
-        </Text>
+          <View>
+             <Text style={{ color: 'white', fontWeight: '600', fontSize: 13  }} numberOfLines={1}>
+              {currentSong.title} 
+            </Text>
+            <Text style={{ color: '#ccc', fontSize: 13}} numberOfLines={1}>
+              {currentSong.artist}
+            </Text>
+          </View>
       </View>
       <Entypo name="controller-play" size={28} color="#fff" />
+      <Entypo name="controller-next" size={28} color="#fff" />
     </TouchableOpacity>
   );
 }

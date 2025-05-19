@@ -1,17 +1,13 @@
 import AlbumVisualizer from '@/components/AlbumVisualizer';
 import { Slider } from '@/components/ui/slider';
 import { useMusicContext } from '@/contexts/MusicContext';
+import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
   ChevronDown,
   Heart,
-  Pause,
-  Play,
-  Repeat,
-  Shuffle,
-  SkipBack,
-  SkipForward,
-  Volume2,
+  MicVocal,
+  Volume2
 } from 'lucide-react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
@@ -113,29 +109,38 @@ const PlayerPage = () => {
       </View>
 
       {/* Controls */}
-      <View className="flex-row justify-center items-center space-x-6 mb-8">
+      <View className="flex-row justify-center items-center gap-5 space-x-10 mb-8">
         <TouchableOpacity>
-          <Shuffle size={20} color="white" />
+          <Entypo name="shuffle" size={20} color="white" />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={playPreviousSong}>
-          <SkipBack size={24} color="white" />
+          <Entypo name="controller-jump-to-start" size={24} color="white" />
         </TouchableOpacity>
-
         <TouchableOpacity
-          className="w-16 h-16 rounded-full bg-white justify-center items-center"
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: 32,
+            backgroundColor: 'white',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
           onPress={() => playSong(currentSong)}
         >
-          {isPlaying ? <Pause size={30} color="#6b21a8" /> : <Play size={30} color="#6b21a8" />}
+          <Entypo
+            name={isPlaying ? 'controller-paus' : 'controller-play'}
+            size={30}
+            color="#6b21a8"
+          />
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={playNextSong}>
-          <SkipForward size={24} color="white" />
-        </TouchableOpacity>
-
         <TouchableOpacity>
-          <Repeat size={20} color="white" />
+          <Entypo name="controller-next" size={24} color="white" onPress={playNextSong}/>
         </TouchableOpacity>
+        <TouchableOpacity>
+          <Entypo Repeat name="ccw" size={20} color="white"/>r
+        </TouchableOpacity>
+
       </View>
 
       {/* Volume Control */}
@@ -152,6 +157,7 @@ const PlayerPage = () => {
           thumbTintColor="#a78bfa"
           style={{ flex: 1 }}
         />
+        <MicVocal onPress={() => router.push(`/music/detail-music?${currentSong.id}`)} size={20} color="rgba(255,255,255,0.8)"/>
       </View>
     </View>
   );
