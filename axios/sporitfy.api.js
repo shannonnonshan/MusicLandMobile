@@ -3,7 +3,6 @@ import qs from 'qs'; // hoặc URLSearchParams nếu không có 'qs'
 
 const client_id = '28f9fa1c72e2461bbfce68c4e6728f58';
 const client_secret = '0cec1f95f55f4e3faf80f6375cad3b9b';
-
 export async function getAccessToken() {
   const token_url = 'https://accounts.spotify.com/api/token';
   const data = qs.stringify({ grant_type: 'client_credentials' });

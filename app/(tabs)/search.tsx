@@ -1,5 +1,6 @@
 import SongCard from '@/components/SongCard';
 import type { Song } from '@/contexts/MusicContext';
+import { useMusicContext } from '@/contexts/MusicContext';
 import { useEffect, useState } from 'react';
 import {
   Image,
@@ -12,10 +13,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { searchTracks } from '../../axios/sporitfy.api';
+//import { searchTracks } from '../../axios/sporitfy.api';
 import '../../global.css';
+import { searchTracks } from '../../axios/deezer.api';
 
 export default function TabSearchScreen() {
+  const { playSong } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [tracks, setTracks] = useState<Song[]>([]);
 
@@ -29,15 +32,25 @@ export default function TabSearchScreen() {
   const delayDebounce = setTimeout(() => {
       searchTracks(searchQuery)
         .then((res) => {
-          if (Array.isArray(res?.tracks?.items)) {
-            const mappedTracks: Song[] = res.tracks.items.map((track: any) => ({
+          if (res?.data) {
+            console.log('Search results:', res.data);
+            const mappedTracks: Song[] = res.data.map((track: any) => ({
+            //   id: track.id,
+            //   title: track.name,
+            //   artist: track.artists?.[0]?.name || 'Unknown Artist',
+            //   album: track.album?.name || 'Unknown Album',
+            //   duration: Math.floor(track.duration_ms / 1000) || 0,
+            //   liked: false,
+            //   thumbnail: track.album?.images?.[0]?.url || '',
+            //   uri: track.preview_url || '', // Assuming you have a preview URL
               id: track.id,
-              title: track.name,
-              artist: track.artists?.[0]?.name || 'Unknown Artist',
-              album: track.album?.name || 'Unknown Album',
-              duration: Math.floor(track.duration_ms / 1000) || 0,
+              title: track.title,
+              artist: track.artist?.name || 'Unknown Artist',
+              album: track.album?.title || 'Unknown Album',
+              duration: track.duration || 0,
               liked: false,
-              thumbnail: track.album?.images?.[0]?.url || '',
+              thumbnail: track.album?.cover || '',
+              uri: track.preview || '', 
             }));
             setTracks(mappedTracks);
           } else {
@@ -81,7 +94,9 @@ export default function TabSearchScreen() {
       {/* Kết quả tìm kiếm */}
       <ScrollView>
         {tracks.map((track, index) => (
-          <SongCard key={track.id} song={track} index={index} />
+          <SongCard key={track.id} song={track} index={index} onPress={() => {
+                playSong(track);
+              }}/>
         ))}
       </ScrollView>
     </SafeAreaView>
