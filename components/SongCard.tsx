@@ -25,7 +25,7 @@ const SongCard: React.FC<SongCardProps> = ({ song, index, onPress }) => {
       activeOpacity={0.8}
     >
       <Image
-        source={{ uri: 'https://images.unsplash.com/photo-1632667113908-10f5dbafa8a1' }}
+        source={{ uri: song.thumbnail }}
         style={styles.image}
         resizeMode="cover"
       />
@@ -43,7 +43,7 @@ const SongCard: React.FC<SongCardProps> = ({ song, index, onPress }) => {
         <TouchableOpacity
           onPress={(e) => {
             e.stopPropagation?.();
-            toggleLike(song.id);
+            toggleLike(Number(song.id));
           }}
         >
           <Heart

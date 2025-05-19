@@ -62,7 +62,7 @@ const PlayerPage = () => {
         </View>
         <TouchableOpacity
           className="p-2"
-          onPress={() => toggleLike(currentSong.id)}
+          onPress={() => toggleLike(Number(currentSong.id))}
         >
           <Heart
             size={24}

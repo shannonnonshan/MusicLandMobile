@@ -9,12 +9,13 @@ import { Audio } from 'expo-av';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export interface Song {
-  id: number;
+  id: string;
   title: string;
   artist: string;
   album: string;
   duration: number;
   liked: boolean;
+  thumbnail: string;
   uri: string; // Thêm trường uri để lưu đường dẫn file âm thanh
 }
 
@@ -26,6 +27,8 @@ interface MusicContextType {
   volume: number;
   duration: number;
   currentTime: number;
+  thumbnail: string;
+  uri: string;
   playSong: (song: Song) => void;
   pauseSong: () => void;
   playNextSong: () => void;
@@ -204,12 +207,12 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const toggleLike = (songId: number) => {
     setSongs((prevSongs) => {
       const updatedSongs = prevSongs.map((song) =>
-        song.id === songId ? { ...song, liked: !song.liked } : song
+        song.id === String(songId) ? { ...song, liked: !song.liked } : song
       );
 
       // Update currentSong nếu nó là bài được toggle
-      if (currentSong && currentSong.id === songId) {
-        setCurrentSong(updatedSongs.find(song => song.id === songId) || null);
+      if (currentSong && currentSong.id === String(songId)) {
+        setCurrentSong(updatedSongs.find(song => Number(song.id) === songId) || null);
       }
 
       return updatedSongs;
@@ -226,6 +229,8 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         volume: volume * 100, // UI 0-100
         duration,
         currentTime,
+        thumbnail: currentSong?.thumbnail || '',
+        uri: currentSong?.uri || '',
         playSong,
         pauseSong,
         playNextSong,
