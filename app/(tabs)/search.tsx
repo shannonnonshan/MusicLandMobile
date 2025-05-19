@@ -33,7 +33,6 @@ export default function TabSearchScreen() {
       searchTracks(searchQuery)
         .then((res) => {
           if (res?.data) {
-            console.log('Search results:', res.data);
             const mappedTracks: Song[] = res.data.map((track: any) => ({
             //   id: track.id,
             //   title: track.name,
