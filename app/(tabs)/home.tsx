@@ -1,9 +1,10 @@
+import { fetchPlaylists } from '@/axios/platform.api';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInLeft } from 'react-native-reanimated';
-
 // Tạo một Button native đơn giản tương tự Button web bạn dùng
 const Button = ({ onPress, children, style }: any) => (
   <TouchableOpacity
@@ -24,18 +25,46 @@ const Button = ({ onPress, children, style }: any) => (
     {children}
   </TouchableOpacity>
 );
-
+const colorsPool = [
+  ['#7C3AED', '#3B82F6'],
+  ['#22C55E', '#14B8A6'],
+  ['#EF4444', '#F97316'],
+  ['#F59E0B', '#10B981'],
+  ['#6366F1', '#8B5CF6'],
+];
+interface FeaturedPlaylist {
+  id: string;
+  name: string;
+  countSong: number;
+  colors: string[];
+}
 const HomePage = () => {
   const router = useRouter();
   const { songs = [], playSong } = useMusicContext();
-
+  const [featuredPlaylists, setFeaturedPlaylists] = useState<FeaturedPlaylist[]>([]);
   const recentSongs = songs.slice(0, 4);
   
-  const featuredPlaylists = [
-    { id: 1, name: 'Top Hits', songCount: 20, colors: ['#7C3AED', '#3B82F6'] },
-    { id: 2, name: 'Chill Vibes', songCount: 15, colors: ['#22C55E', '#14B8A6'] },
-    { id: 3, name: 'Workout Mix', songCount: 18, colors: ['#EF4444', '#F97316'] },
-  ];
+
+      useEffect(() => {
+      const getData = async () => {
+        try {
+          const data = await fetchPlaylists();
+
+          const withColors: FeaturedPlaylist[] = data.map((p: any, i: number) => ({
+            id: p._id || p.id,
+            name: p.name,
+            songCount: p.countSong || 0,
+            colors: colorsPool[i % colorsPool.length],
+          }));
+
+          setFeaturedPlaylists(withColors);
+        } catch (err) {
+          console.error('Fetch playlist error:', err);
+        }
+      };
+
+      getData();
+    }, []);
 
   return (
     <ScrollView
@@ -145,7 +174,7 @@ const HomePage = () => {
         >
           <View>
             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{playlist.name}</Text>
-            <Text style={{ color: '#F0F0F0', fontSize: 12 }}>{playlist.songCount} songs</Text>
+            <Text style={{ color: '#F0F0F0', fontSize: 12 }}>{playlist.countSong} songs</Text>
           </View>
           <TouchableOpacity
             style={{

@@ -1,18 +1,7 @@
 // lib/musicStorage.ts
 import { Song } from '@/contexts/MusicContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// Định nghĩa interface Song cho đúng kiểu
-// export interface Song {
-//   id: number;
-//   title: string;
-//   artist: string;
-//   album: string;
-//   duration: number;
-//   liked: boolean;
-//   thumbnail?: string; 
-// }
 
-// Danh sách nhạc mẫu có sẵn
 export const initialSongs: Song[] = [
   {
     id: "1",
@@ -23,6 +12,8 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/midnight-dreams.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id: "2",
@@ -33,6 +24,8 @@ export const initialSongs: Song[] = [
     liked: true,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/electric-waves.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id: "3",
@@ -43,6 +36,8 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/ocean-breeze.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id: "4",
@@ -53,6 +48,8 @@ export const initialSongs: Song[] = [
     liked: true,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/urban-jungle.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id: "5",
@@ -63,6 +60,8 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/mountain-high.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id: "6",
@@ -73,6 +72,8 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/sunset-boulevard.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id:" 7",
@@ -83,6 +84,8 @@ export const initialSongs: Song[] = [
     liked: true,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/rainy-day.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   },
   {
     id: "8",
@@ -93,6 +96,8 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/neon-lights.mp3",
+    gerne: "Pop",
+    releaseYear:"2020",
   }
 ];
 

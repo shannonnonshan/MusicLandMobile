@@ -38,6 +38,8 @@ export default function TabSearchScreen() {
           liked: false,
           thumbnail: track.album?.cover || '',
           uri: track.preview || '',
+          gerne: track.genre || '',
+          releaseYear: track.release_year || '',
         }));
 
         const mappedAlbums: Album[] = res.albums.map((album: any) => ({

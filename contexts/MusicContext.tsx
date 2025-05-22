@@ -17,6 +17,8 @@ export interface Song {
   liked: boolean;
   thumbnail: string;
   uri: string; // Thêm trường uri để lưu đường dẫn file âm thanh
+  gerne: string;
+  releaseYear: string;
 }
 export interface Album {
   id: string;
@@ -25,7 +27,15 @@ export interface Album {
   thumbnail: string;
   songs: Song[];
 }
-
+export interface Playlist {
+  id: string;
+  name: string;
+  coverImage?: string;
+  songs?: Song[]; // Array of Song IDs
+  createdBy?: string; // user ID
+  createdAt?: Date;
+  countSong: number;
+}
 interface MusicContextType {
   songs: Song[];
   currentSong: Song | null;
