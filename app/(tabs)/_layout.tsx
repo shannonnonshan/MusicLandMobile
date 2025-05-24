@@ -1,22 +1,20 @@
 import { HapticTab } from '@/components/HapticTab';
 import { MiniPlayer } from '@/components/MiniPlayer';
-import { useMusicContext } from '@/contexts/MusicContext';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Tabs, useSegments } from 'expo-router';
 import { View } from 'react-native';
 import '../../global.css';
 
-import { IconSymbol } from '@/components/ui/IconSymbol';
-
 export default function TabLayout() {
   const segments = useSegments(); // Lấy segment từ URL, ví dụ: ['(tabs)', 'home']
-  const {currentSong} = useMusicContext() || null;
+  
   // Kiểm tra nếu là home hoặc search thì mới hiện MiniPlayer
   const currentTab = segments[1]; // segments[0] là "(tabs)", segments[1] là tên trang
   const showMiniPlayer = currentTab === 'home' || currentTab === 'search';
 
   return (
     <View style={{ flex: 1 }}>
-      {showMiniPlayer && currentSong && <MiniPlayer />}
+      {showMiniPlayer && <MiniPlayer />}
 
       <Tabs
         screenOptions={{

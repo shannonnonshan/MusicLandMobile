@@ -53,7 +53,7 @@ const HomePage = () => {
           const withColors: FeaturedPlaylist[] = data.map((p: any, i: number) => ({
             id: p._id || p.id,
             name: p.name,
-            songCount: p.countSong || 0,
+            countSong: p.countSong || 0,
             colors: colorsPool[i % colorsPool.length],
           }));
 

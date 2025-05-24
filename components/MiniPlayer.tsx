@@ -13,6 +13,7 @@ interface MiniPlayerProps {
 export function MiniPlayer({ bottomOffset = 85, bgColor = '#F57D1F' }: MiniPlayerProps) {
   const router = useRouter();
   const {currentSong} = useMusicContext();
+  if (!currentSong) return null;
   return (
     <TouchableOpacity
       onPress={() => router.push('/player')}
