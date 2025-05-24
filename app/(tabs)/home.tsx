@@ -69,7 +69,7 @@ const HomePage = () => {
           Listen to the latest hits and your favorite artists
         </Text>
         <Button
-          onPress={() => router.push('/library')}
+          onPress={() => router.push('/playlist/create')}
           style={{ backgroundColor: 'white' }}
         >
           <Play color="#7C3AED" size={16} />
