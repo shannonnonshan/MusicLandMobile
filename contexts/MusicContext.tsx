@@ -7,7 +7,6 @@ import {
 import { formatTime } from '@/lib/timeUtils';
 import { Audio } from 'expo-av';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-
 export interface Song {
   id: string;
   title: string;

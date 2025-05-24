@@ -1,15 +1,21 @@
-import SongCard from '@/components/SongCard';
-import { useMusicContext } from '@/contexts/MusicContext';
-import { useRouter } from 'expo-router';
-import { Heart, Library, Search } from 'lucide-react-native';
-import { useState } from 'react';
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+// components/DetailPlaylistView.tsx
 
-const LibraryPage = () => {
-  const { songs, playSong } = useMusicContext();
+import SongCard from '@/components/SongCard';
+import { Playlist, Song, useMusicContext } from '@/contexts/MusicContext';
+
+import { Heart, Search } from 'lucide-react-native';
+import { useState } from 'react';
+import { FlatList, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+interface Props {
+  songs: Song[];
+  playlist?: Playlist;
+}
+
+export default function DetailPlaylistView({ songs, playlist }: Props) {
+  const { playSong } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'liked'>('all');
-  const router = useRouter();
 
   const filteredSongs = songs.filter(song => {
     const matchesSearch =
@@ -26,9 +32,17 @@ const LibraryPage = () => {
   return (
     <View className="flex-1 bg-gray-50 px-4 py-6 pb-20">
       {/* Header */}
-      <View className="flex-row items-center mb-6">
-        <Library size={24} color="#4B5563" className="mr-2" />
-        <Text className="text-2xl font-bold text-gray-900">Your Library</Text>
+      <View className="items-center mb-6">
+        {playlist?.coverImage && (
+          <Image
+            source={{ uri: playlist.coverImage }}
+            style={{ width: 120, height: 120, borderRadius: 12 }}
+          />
+        )}
+        <Text className="text-2xl font-bold text-gray-900 mt-4">{playlist?.name || 'Playlist'}</Text>
+        <Text className="text-gray-500 text-sm mt-1">
+          {playlist?.countSong || 0} songs
+        </Text>
       </View>
 
       {/* Search Bar */}
@@ -102,6 +116,4 @@ const LibraryPage = () => {
       )}
     </View>
   );
-};
-
-export default LibraryPage;
+}

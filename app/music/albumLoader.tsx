@@ -1,14 +1,13 @@
 import { getAlbumTracks } from '@/axios/deezer.api';
 import SongCard from '@/components/SongCard';
 import { useMusicContext } from '@/contexts/MusicContext';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
 
 const AlbumPage = () => {
   const { playSong } = useMusicContext();
   const { albumId } = useLocalSearchParams();
-  const router = useRouter();
   const navigation = useNavigation();
   const [albumTitle, setAlbumTitle] = useState('');
   const [albumSongs, setAlbumSongs] = useState([]);
