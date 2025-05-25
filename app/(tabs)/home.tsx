@@ -3,7 +3,7 @@ import { useMusicContext } from '@/contexts/MusicContext';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInLeft } from 'react-native-reanimated';
 // Tạo một Button native đơn giản tương tự Button web bạn dùng
 const Button = ({ onPress, children, style }: any) => (
@@ -67,6 +67,7 @@ const HomePage = () => {
     }, []);
 
   return (
+    <SafeAreaView>
     <ScrollView
       contentContainerStyle={{
         padding: 16,
@@ -194,6 +195,7 @@ const HomePage = () => {
       </View>
       
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

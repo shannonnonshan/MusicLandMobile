@@ -29,7 +29,6 @@ const PlayerPage = () => {
     formatTime,
   } = useMusicContext();
 
-  console.log(currentSong);
   if (!currentSong) {
     return (
       <View className="flex-1 justify-center items-center p-6 bg-black">
@@ -75,7 +74,7 @@ const PlayerPage = () => {
       {/* Album Cover */}
       <View className="w-64 h-64 mx-auto rounded-lg overflow-hidden shadow-lg mb-8">
         <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1573247352896-dd8ee4f547ce' }}
+          source={{ uri: currentSong.thumbnail || '/assets/images/MSlogo.png' }}
           className="w-full h-full rounded-lg"
           resizeMode="cover"
         />
@@ -97,7 +96,8 @@ const PlayerPage = () => {
           maximumValue={100}
           minimumValue={0}
           step={0.1}
-          onValueChange={(value) => seekTo(value)}
+          // s
+          onSlidingComplete={(value) => seekTo(value)}
           minimumTrackTintColor="#7c3aed"
           maximumTrackTintColor="#fff"
           thumbTintColor="#a78bfa"
@@ -134,11 +134,11 @@ const PlayerPage = () => {
             color="#6b21a8"
           />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Entypo name="controller-next" size={24} color="white" onPress={playNextSong}/>
+        <TouchableOpacity onPress={playNextSong}>
+          <Entypo name="controller-next" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity>
-          <Entypo Repeat name="ccw" size={20} color="white"/>r
+           <Entypo name="ccw" size={20} color="white" />
         </TouchableOpacity>
 
       </View>
