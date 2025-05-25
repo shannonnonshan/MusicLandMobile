@@ -41,7 +41,7 @@ export default function DetailPlaylistView({ songs, playlist }: Props) {
         )}
         <Text className="text-2xl font-bold text-gray-900 mt-4">{playlist?.name || 'Playlist'}</Text>
         <Text className="text-gray-500 text-sm mt-1">
-          {playlist?.countSong || 0} songs
+          {playlist?.countSongs || 0} songs
         </Text>
       </View>
 

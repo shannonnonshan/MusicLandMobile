@@ -12,7 +12,7 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/midnight-dreams.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -24,7 +24,7 @@ export const initialSongs: Song[] = [
     liked: true,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/electric-waves.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -36,7 +36,7 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/ocean-breeze.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -48,7 +48,7 @@ export const initialSongs: Song[] = [
     liked: true,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/urban-jungle.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -60,7 +60,7 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/mountain-high.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -72,7 +72,7 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/sunset-boulevard.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -84,7 +84,7 @@ export const initialSongs: Song[] = [
     liked: true,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/rainy-day.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   },
   {
@@ -96,7 +96,7 @@ export const initialSongs: Song[] = [
     liked: false,
     thumbnail : '../assets/images/MSlogo.png',
     uri: "https://www.example.com/audio/neon-lights.mp3",
-    gerne: "Pop",
+    genre: "Pop",
     releaseYear:"2020",
   }
 ];

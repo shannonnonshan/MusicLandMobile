@@ -16,7 +16,7 @@ export interface Song {
   liked: boolean;
   thumbnail: string;
   uri: string; // Thêm trường uri để lưu đường dẫn file âm thanh
-  gerne: string;
+  genre: string;
   releaseYear: string;
 }
 export interface Album {
@@ -33,7 +33,7 @@ export interface Playlist {
   songs?: Song[]; // Array of Song IDs
   createdBy?: string; // user ID
   createdAt?: Date;
-  countSong: number;
+  countSongs?: number; // Optional, to store the number of songs in the playlist
 }
 interface MusicContextType {
   songs: Song[];
@@ -171,31 +171,31 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   };
 
   const playSong = async (song: Song) => {
-    if (!song) return;
+  if (!song) return;
 
-    if (currentSong && currentSong.id === song.id) {
-      if (sound) {
-        if (isPlaying) {
-          await sound.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await sound.playAsync();
-          setIsPlaying(true);
-        }
+  if (currentSong?.id === song.id) {
+    if (sound) {
+      if (isPlaying) {
+        await sound.pauseAsync();
+        setIsPlaying(false);
+      } else {
+        await sound.playAsync();
+        setIsPlaying(true);
       }
-    } else {
-      setCurrentSong(song);
-      setIsPlaying(true);
-      // Sound sẽ tự load và play ở useEffect phía trên
     }
+  } else {
+    // So sánh trước khi set lại
+    setCurrentSong((prev) => (prev?.id === song.id ? prev : song));
+    setIsPlaying(true);
+  }
   };
 
-  const pauseSong = async () => {
+  async function pauseSong() {
     if (sound) {
       await sound.pauseAsync();
       setIsPlaying(false);
     }
-  };
+  }
 
   const playNextSong = useCallback(async () => {
     if (!currentSong || songs.length === 0) return;
