@@ -33,7 +33,6 @@ export interface Playlist {
   songs?: Song[]; // Array of Song IDs
   createdBy?: string; // user ID
   createdAt?: Date;
-  countSongs?: number; // Optional, to store the number of songs in the playlist
 }
 interface MusicContextType {
   songs: Song[];
