@@ -95,7 +95,13 @@ export default function SelectSongsScreen() {
           return (
             <TouchableOpacity key={track.id} onPress={() => toggleSelect(track)}>
               <View style={isSelected ? styles.selected : {}}>
-                <SongPlaylistCard song={track} index={index} onPress={() => {}} />
+                <SongPlaylistCard
+                    song={track}
+                    index={index}
+                    isSelected={!!isSelected}
+                    onPress={() => toggleSelect(track)}
+                />
+
               </View>
             </TouchableOpacity>
           );

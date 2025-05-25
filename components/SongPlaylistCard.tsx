@@ -8,21 +8,20 @@ type SongPlaylistCardProps = {
   song: Song;
   index: number;
   onPress: () => void;
+  isSelected: boolean;
 };
 
-const SongPlaylistCard: React.FC<SongPlaylistCardProps> = ({ song, index, onPress }) => {
+const SongPlaylistCard: React.FC<SongPlaylistCardProps> = ({ song, index, onPress, isSelected }) => {
   const { currentSong, formatTime } = useMusicContext();
 
   const isActive = currentSong && currentSong.id === song.id;
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
+    <View
       style={[
         styles.container,
         isActive ? styles.activeBackground : styles.inactiveBackground,
       ]}
-      activeOpacity={0.8}
     >
       <Image
         source={{ uri: song.thumbnail }}
@@ -42,11 +41,17 @@ const SongPlaylistCard: React.FC<SongPlaylistCardProps> = ({ song, index, onPres
       <View style={styles.controls}>
         <Text style={styles.duration}>{formatTime(song.duration)}</Text>
 
-        <View style={styles.addButton}>
-          <Plus size={18} color="#6b21a8" />
-        </View>
+        <TouchableOpacity
+          onPress={onPress}
+          style={[
+            styles.addButton,
+            isSelected && styles.addedButton,
+          ]}
+        >
+          <Plus size={18} color={isSelected ? 'white' : '#6b21a8'} />
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -102,6 +107,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  addedButton: {
+    backgroundColor: '#6b21a8',
   },
 });
 
