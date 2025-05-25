@@ -40,7 +40,7 @@ export default function ListPlaylistView() {
           <Text className="text-white text-lg font-semibold">Your Playlist</Text>
         </View>
 
-        <Pressable className="absolute right-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
+        <Pressable onPress={() => router.push('/playlist/create')} className="absolute right-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
           <Entypo name="add-to-list" size={20} color="white" />
         </Pressable>
       </View>
