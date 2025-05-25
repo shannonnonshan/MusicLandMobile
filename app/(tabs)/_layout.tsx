@@ -1,20 +1,14 @@
 import { HapticTab } from '@/components/HapticTab';
-import { MiniPlayer } from '@/components/MiniPlayer';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Tabs, useSegments } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import '../../global.css';
 
 export default function TabLayout() {
-  const segments = useSegments(); // Lấy segment từ URL, ví dụ: ['(tabs)', 'home']
-  
-  // Kiểm tra nếu là home hoặc search thì mới hiện MiniPlayer
-  const currentTab = segments[1]; // segments[0] là "(tabs)", segments[1] là tên trang
-  const showMiniPlayer = currentTab === 'home' || currentTab === 'search';
 
   return (
     <View style={{ flex: 1 }}>
-      {showMiniPlayer && <MiniPlayer />}
+      
 
       <Tabs
         screenOptions={{
