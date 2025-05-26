@@ -10,7 +10,7 @@ export const baseURL =
 export const createPlaylist = async (playlistData) => {
   const deviceId = await getOrCreateDeviceId();
 
-  const res = await axios.post(`${baseURL}/playlist`, {
+  const res = await axios.post(`${baseURL}/playlist/create`, {
     ...playlistData,
     deviceId,
   });

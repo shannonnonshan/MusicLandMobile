@@ -13,8 +13,9 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  const segments = useSegments(); // <-- Quan trọng để biết route hiện tại
-  const currentTab = segments[1]; // segments[0] là layout như (tabs), segments[1] là tên cụ thể
+  const segments = useSegments();
+  const currentTab = segments[1]; // ví dụ: ['(tabs)', 'home']
+
   const showMiniPlayer = currentTab === 'home' || currentTab === 'search';
 
   if (!loaded) return null;
@@ -24,10 +25,29 @@ export default function RootLayout() {
       <MusicProvider>
         <View style={{ flex: 1 }}>
           <Stack>
+            {/* Main tabs layout */}
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+            {/* Not Found screen */}
             <Stack.Screen name="+not-found" />
-            <Stack.Screen name="music/detail-music" options={{ headerShown: false }} />
-            <Stack.Screen name="playlist/list-playlist" options={{ headerShown: false }} />
+
+            {/* Detail music screen */}
+            <Stack.Screen
+              name="music/detail-music"
+              options={{ headerShown: false }}
+            />
+
+            {/* Playlist listing */}
+            <Stack.Screen
+              name="playlist/list-playlist"
+              options={{ headerShown: false }}
+            />
+
+            {/* Modal popup (create playlist) */}
+            <Stack.Screen
+              name="playlist/(modal)/create"
+              options={{ presentation: 'modal', headerShown: false }}
+            />
           </Stack>
 
           {showMiniPlayer && <MiniPlayer />}

@@ -1,7 +1,8 @@
 import { initialPlaylist } from '@/lib/playlistStorage';
 import { Entypo } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Play } from 'lucide-react-native';
+
 import { useEffect, useState } from 'react';
 import { Dimensions, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { SlideInLeft } from 'react-native-reanimated';
@@ -12,7 +13,19 @@ export default function ListPlaylistView() {
   const [featuredPlaylists, setFeaturedPlaylists] = useState<typeof mockPlaylists>([]);
   const screenHeight = Dimensions.get('window').height;
   const router = useRouter();
+  const params = useLocalSearchParams();
 
+  
+  // useEffect(() => {
+  //   if (params.created) {
+  //     try {
+  //       const newPlaylist = JSON.parse(params.created);
+  //       setFeaturedPlaylists((prev) => [newPlaylist, ...prev]);
+  //     } catch (e) {
+  //       console.warn('Invalid playlist JSON');
+  //     }
+  //   }
+  // }, [params]);
   useEffect(() => {
     setTimeout(() => {
       setFeaturedPlaylists(mockPlaylists);
@@ -40,7 +53,7 @@ export default function ListPlaylistView() {
           <Text className="text-white text-lg font-semibold">Your Playlist</Text>
         </View>
 
-        <Pressable onPress={() => router.push('/playlist/create')} className="absolute right-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
+        <Pressable onPress={() => router.push('/playlist/(modal)/create')} className="absolute right-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
           <Entypo name="add-to-list" size={20} color="white" />
         </Pressable>
       </View>
@@ -63,7 +76,7 @@ export default function ListPlaylistView() {
 
             <View className="flex-1">
               <Text className="text-white font-bold text-base">{playlist.name}</Text>
-              <Text className="text-[#F0F0F0] text-xs">{playlist.countSong} songs</Text>
+              <Text className="text-[#F0F0F0] text-xs">3 songs</Text>
             </View>
 
             <Pressable
