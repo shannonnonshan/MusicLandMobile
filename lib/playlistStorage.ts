@@ -1,5 +1,4 @@
 // lib/mockPlaylists.ts
-
 export const initialPlaylist = [
   {
     id: '1',

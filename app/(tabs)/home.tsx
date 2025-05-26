@@ -1,9 +1,9 @@
-import { fetchPlaylists } from '@/axios/platform.api';
+import { fetchPlaylists } from '@/axios/playlist';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StatusBar as RNStatusBar, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInLeft } from 'react-native-reanimated';
 // Tạo một Button native đơn giản tương tự Button web bạn dùng
 const Button = ({ onPress, children, style }: any) => (
@@ -46,28 +46,28 @@ const HomePage = () => {
   
 
       useEffect(() => {
-      const getData = async () => {
-        try {
-          const data = await fetchPlaylists();
+        const getData = async () => {
+          try {
+            const data = await fetchPlaylists();
 
-          const withColors: FeaturedPlaylist[] = data.map((p: any, i: number) => ({
-            id: p._id || p.id,
-            name: p.name,
-            countSong: p.countSong || 0,
-            colors: colorsPool[i % colorsPool.length],
-          }));
+            const withColors: FeaturedPlaylist[] = data.map((p: any, i: number) => ({
+              id: p._id || p.id,
+              name: p.name,
+              countSong: p.countSong || 0,
+              colors: colorsPool[i % colorsPool.length],
+            }));
 
-          setFeaturedPlaylists(withColors);
-        } catch (err) {
-          console.error('Fetch playlist error:', err);
-        }
-      };
+            setFeaturedPlaylists(withColors);
+          } catch (err) {
+            console.error('Fetch playlist error:', err);
+          }
+        };
 
-      getData();
-    }, []);
+        getData();
+      }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
     <ScrollView
       contentContainerStyle={{
         padding: 16,
@@ -200,3 +200,13 @@ const HomePage = () => {
 };
 
 export default HomePage;
+const STATUS_BAR_HEIGHT =
+  Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : 0;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    paddingTop: STATUS_BAR_HEIGHT + 10,
+  },
+});

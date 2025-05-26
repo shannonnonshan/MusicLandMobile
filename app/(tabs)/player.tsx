@@ -38,7 +38,7 @@ const PlayerPage = () => {
         </Text>
         <TouchableOpacity
           className="bg-purple-700 px-4 py-2 rounded"
-          onPress={() => router.push('/library')}  // dùng router.push thay navigate
+          onPress={() => router.push('/playlist/list-playlist')}  // dùng router.push thay navigate
         >
           <Text className="text-white text-center">Go to Library</Text>
         </TouchableOpacity>

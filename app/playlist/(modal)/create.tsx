@@ -1,9 +1,9 @@
+import { createPlaylist } from '@/axios/playlist';
+import { useDeviceId } from '@/hooks/useDeviceId';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -14,10 +14,20 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-const CreateScreen = () => {
+const CreateScreen = ({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) => {
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const router = useRouter();
+  const deviceId = useDeviceId();
+
+  useEffect(() => {
+    console.log('deviceId:', deviceId);
+  }, [deviceId]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -31,85 +41,95 @@ const CreateScreen = () => {
     }
   };
 
-  const handleCreatePlaylist = () => {
+  const handleCreatePlaylist = async () => {
     if (!name.trim()) {
       Alert.alert('Missing Information', 'Please enter a playlist name.');
       return;
     }
 
-    const newPlaylist = {
-      id: Date.now().toString(),
-      name,
-      coverImage: image ?? 'https://placehold.co/300x300',
-      colors: ['#7C3AED'],
-    };
+    if (!deviceId) {
+      Alert.alert('Device ID not available.');
+      return;
+    }
 
-    router.replace({
-      pathname: '/playlist/list-playlist',
-      params: {
-        created: JSON.stringify(newPlaylist),
-      },
-    });
+    try {
+      const result = await createPlaylist({
+        name,
+        deviceId,
+        imageUri: image ?? undefined,
+      });
+
+      console.log('Playlist created:', result);
+
+      onCreated();  // Reload danh sách playlist
+      onClose();    // Đóng modal
+    } catch (err: any) {
+      console.error('Failed to create playlist:', err.message);
+      Alert.alert('Error', 'Could not create playlist.');
+    }
   };
 
   return (
-    <View style={styles.modalOverlay}>
-      <View style={styles.modalBox}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <Animated.View entering={FadeInDown.duration(300)} style={styles.section}>
-            <Text style={styles.label}>Playlist Image</Text>
-            <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-              {image ? (
-                <Image source={{ uri: image }} style={styles.image} />
-              ) : (
-                <Text style={styles.imagePlaceholder}>Choose an image</Text>
-              )}
-            </TouchableOpacity>
-          </Animated.View>
-
-          <Animated.View entering={FadeInDown.delay(150)} style={styles.section}>
-            <Text style={styles.label}>Playlist Name</Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Enter playlist name"
-              placeholderTextColor="#ccc"
-              style={styles.input}
-            />
-          </Animated.View>
-
-          <Animated.View entering={FadeInDown.delay(300)} style={{ marginTop: 24 }}>
-            <TouchableOpacity onPress={handleCreatePlaylist} style={styles.button}>
-              <Text style={styles.buttonText}>Create Playlist</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </ScrollView>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Create Playlist</Text>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <Text style={{ color: '#7C3AED', fontWeight: 'bold' }}>Cancel</Text>
+        </TouchableOpacity>
       </View>
-    </View>
+
+      <Animated.View entering={FadeInDown.duration(500)} style={styles.section}>
+        <Text style={styles.label}>Playlist Image</Text>
+        <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.image} />
+          ) : (
+            <Text style={styles.imagePlaceholder}>Choose an image</Text>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(200)} style={styles.section}>
+        <Text style={styles.label}>Playlist Name</Text>
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          placeholder="Enter playlist name"
+          placeholderTextColor="#ccc"
+          style={styles.input}
+        />
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(600)} style={{ marginTop: 24 }}>
+        <TouchableOpacity onPress={handleCreatePlaylist} style={styles.button}>
+          <Text style={styles.buttonText}>Create Playlist</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </ScrollView>
   );
 };
 
 export default CreateScreen;
 
-// Styles
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  modalBox: {
-    width: '100%',
-    maxHeight: Dimensions.get('window').height * 0.9,
-    backgroundColor: '#121212',
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-  },
   container: {
-    paddingBottom: 20,
+    padding: 20,
+    backgroundColor: '#121212',
+    flexGrow: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  closeButton: {
+    padding: 8,
   },
   section: {
     marginBottom: 16,
@@ -129,22 +149,24 @@ const styles = StyleSheet.create({
   imagePicker: {
     backgroundColor: '#1E1E1E',
     height: 160,
-    borderRadius: 8,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   imagePlaceholder: {
-    color: '#aaa',
+    color: '#7C3AED',
+    fontWeight: 'bold',
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 8,
+    borderRadius: 12,
   },
   button: {
     backgroundColor: '#7C3AED',
+    borderRadius: 12,
     paddingVertical: 14,
-    borderRadius: 8,
+    paddingHorizontal: 24,
     alignItems: 'center',
   },
   buttonText: {

@@ -27,12 +27,13 @@ export interface Album {
   songs: Song[];
 }
 export interface Playlist {
-  id: string;
+  _id: string;
   name: string;
   coverImage?: string;
-  songs?: Song[]; // Array of Song IDs
-  createdBy?: string; // user ID
+  songs?: Song[]; 
+  createdBy?: string;
   createdAt?: Date;
+  countSong?: number;
 }
 interface MusicContextType {
   songs: Song[];
