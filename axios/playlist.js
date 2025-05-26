@@ -34,8 +34,10 @@ export const createPlaylist = async ({ name, deviceId, imageUri }) => {
   return response.data;
 };
 
-export const getPlaylists = async () => {
-  const res = await axiosInstance.get('/playlist/getPlaylists');
+export const getPlaylists = async (deviceId) => {
+  const res = await axiosInstance.get('/playlist/getPlaylists', {
+    params: { deviceId }
+  });
   return res.data;
 };
 
@@ -45,4 +47,14 @@ export const getPlaylistTracks = async (playlistId) => {
   });
   return res.data;
 };
+
+export const addSongToPlaylist = async (playlistId, songIds) => {
+  const res = await axiosInstance.post('/playlist/addSongToPlaylist', {
+    playlistId,
+    songIds,   // gửi mảng songIds
+  });
+  return res.data;
+};
+
+
 

@@ -1,4 +1,5 @@
 import { MiniPlayer } from '@/components/MiniPlayer';
+import { DeviceIdProvider } from '@/contexts/DeviceContext';
 import { MusicProvider } from '@/contexts/MusicContext';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -22,6 +23,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
+       <DeviceIdProvider>
       <MusicProvider>
         <View style={{ flex: 1 }}>
           <Stack>
@@ -55,6 +57,7 @@ export default function RootLayout() {
           <StatusBar style="auto" />
         </View>
       </MusicProvider>
+      </DeviceIdProvider>
     </ThemeProvider>
   );
 }
