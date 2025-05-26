@@ -1,4 +1,4 @@
-import { fetchPlaylists } from '@/axios/platform.api';
+import { fetchPlaylists } from '@/axios/playlist';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';

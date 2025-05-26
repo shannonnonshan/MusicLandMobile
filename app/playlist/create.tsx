@@ -1,6 +1,8 @@
+import { createPlaylist } from '@/axios/playlist';
+import { useDeviceId } from '@/hooks/useDeviceId';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -15,9 +17,11 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 const CreateScreen = () => {
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
   const router = useRouter();
-
+  const deviceId = useDeviceId();
+  useEffect(() => {
+    console.log('deviceId:', deviceId);
+  }, [deviceId]);
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -30,22 +34,41 @@ const CreateScreen = () => {
     }
   };
 
-  const handleCreatePlaylist = () => {
-  if (!name.trim()) {
-    Alert.alert('Missing Information', 'Please enter a playlist name.');
-    return;
-  }
+  const handleCreatePlaylist = async () => {
+    if (!name.trim()) {
+      Alert.alert('Missing Information', 'Please enter a playlist name.');
+      return;
+    }
 
-  // router.push(`/playlist/selectSong?name=${encodeURIComponent(name)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(image ?? '')}`);
-  router.push({
-  pathname: '/playlist/selectSong' as any, // hoặc as any
-  params: {
-    name,
-    description,
-    image,
-  },
-});
-};
+    if (!deviceId) {
+      Alert.alert('Device ID not available.');
+      return;
+    }
+
+    try {
+      // Gửi lên server
+      const result = await createPlaylist({
+        name,
+        deviceId,
+        imageUri: image ?? undefined,
+      });
+
+      console.log('Playlist created:', result);
+
+      // Điều hướng sang chọn bài hát
+      router.push({
+        pathname: '/playlist/selectSong',
+        params: {
+          name,
+          deviceId,
+          image,
+        },
+      });
+    } catch (err: any) {
+      console.error('Failed to create playlist:', err.message);
+      Alert.alert('Error', 'Could not create playlist.');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -71,7 +94,7 @@ const CreateScreen = () => {
         />
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(400)} style={styles.section}>
+      {/* <Animated.View entering={FadeInDown.delay(400)} style={styles.section}>
         <Text style={styles.label}>Description</Text>
         <TextInput
           value={description}
@@ -81,7 +104,7 @@ const CreateScreen = () => {
           style={[styles.input, { height: 100 }]}
           multiline
         />
-      </Animated.View>
+      </Animated.View> */}
 
       <Animated.View entering={FadeInDown.delay(600)} style={{ marginTop: 24 }}>
         <TouchableOpacity onPress={handleCreatePlaylist} style={styles.button}>
