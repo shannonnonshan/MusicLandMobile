@@ -1,17 +1,17 @@
 import SongPlaylistCard from '@/components/SongPlaylistCard';
 import type { Song } from '@/contexts/MusicContext';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    Platform,
-    StatusBar as RNStatusBar,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Platform,
+  StatusBar as RNStatusBar,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { getTopCharts, searchMulti } from '../../axios/deezer.api';
 
@@ -20,6 +20,7 @@ export default function SelectSongsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [trackResults, setTrackResults] = useState<Song[]>([]);
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
+  const { name, description, image } = useLocalSearchParams();
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {

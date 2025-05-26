@@ -1,9 +1,9 @@
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import '../../global.css';
-
 export default function TabLayout() {
 
   return (
@@ -43,7 +43,7 @@ export default function TabLayout() {
           options={{
             title: 'Search',
             tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="library.fill" color={color} />
+              <FontAwesome name="search" size={24} color={ color } />
             ),
           }}
         />
@@ -51,8 +51,15 @@ export default function TabLayout() {
           name="player"
           options={{
             title: 'Player',
-            tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({focused }) => (
+          <Image
+            source={require('../../assets/images/MSlogo.png')}
+            style={{
+              width: 28,
+              height: 28,
+              opacity: focused ? 1 : 0.5,
+            }}
+          />
             ),
           }}
         />

@@ -2,13 +2,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -36,14 +36,15 @@ const CreateScreen = () => {
     return;
   }
 
+  // router.push(`/playlist/selectSong?name=${encodeURIComponent(name)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(image ?? '')}`);
   router.push({
-    pathname: '/playlist/CreatePlaylist',
-    params: {
-      name,
-      description,
-      image: image ?? '',
-    },
-  });
+  pathname: '/playlist/selectSong' as any, // hoặc as any
+  params: {
+    name,
+    description,
+    image,
+  },
+});
 };
 
   return (
