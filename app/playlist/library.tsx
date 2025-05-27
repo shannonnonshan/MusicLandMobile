@@ -1,21 +1,30 @@
+import { searchTracksByIds } from '@/axios/deezer.api';
 import { baseURL } from '@/axios/platform.api';
-import { getPlaylistTracks } from '@/axios/playlist'; // giả định có API lấy chi tiết playlist
+import { addSongToPlaylist, getPlaylistTracks } from '@/axios/playlist';
 import SongCard from '@/components/SongCard';
-import { useMusicContext } from '@/contexts/MusicContext';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { Song, useMusicContext } from '@/contexts/MusicContext';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Pencil, Plus } from 'lucide-react-native';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image, Text,
+  TouchableOpacity,
+  View
+} from 'react-native'; // ✅ IMPORT MODAL
+import SelectSongsModal from './(modal)/selectSong';
+
 const AlbumPage = () => {
   const { playSong } = useMusicContext();
   const { playlistId } = useLocalSearchParams();
   const navigation = useNavigation();
-  const router = useRouter();
 
   const [albumTitle, setAlbumTitle] = useState('');
   const [albumSongs, setAlbumSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [albumThumbnail, setAlbumThumbnail] = useState('');
+  const [showModal, setShowModal] = useState(false); // ✅ STATE MỞ MODAL
 
   useEffect(() => {
     if (!playlistId) return;
@@ -23,13 +32,11 @@ const AlbumPage = () => {
     const fetchAlbumSongs = async () => {
       try {
         setLoading(true);
-
-        // Fetch album tracks (như hiện tại)
         const playlist = await getPlaylistTracks(playlistId as string);
-        console.log(playlist);
+        const songs = await searchTracksByIds(playlist.songs);
         setAlbumTitle(playlist.name);
-        setAlbumSongs(playlist.songs);
-        setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}` );
+        setAlbumSongs(songs);
+        setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
       } catch (error) {
         console.error('Error fetching album songs or playlist detail:', error);
       } finally {
@@ -49,11 +56,31 @@ const AlbumPage = () => {
         },
         headerTintColor: '#fff',
         headerStyle: {
-          backgroundColor: '#111'
-        }
+          backgroundColor: '#111',
+        },
       });
     }
   }, [navigation, albumTitle]);
+
+  const handleAddSongs = async (songs: Song[]) => {
+    if (!playlistId) return;
+
+    const songIds = songs.map(song => song.id); // tạo mảng id từ mảng bài hát
+
+    try {
+      const result = await addSongToPlaylist(playlistId, songIds);
+      console.log('Add songs result:', result);
+      setShowModal(false);
+      const playlist = await getPlaylistTracks(playlistId as string);
+      const songPlaylist = await searchTracksByIds(playlist.songs) || null;
+      setAlbumSongs(songPlaylist);
+
+    } catch (error) {
+      console.error('Failed to add songs:', error);
+    }
+  };
+
+
 
   return (
     <View className="flex-1 bg-black px-4 py-6 pb-20">
@@ -64,20 +91,16 @@ const AlbumPage = () => {
           style={{ width: 200, height: 200, borderRadius: 12 }}
         />
 
-        {/* Nút Add và Edit bên dưới hình */}
         <Text className="text-2xl font-bold text-white mt-4">{albumTitle || 'Album'}</Text>
-        <View className="flex-row ml-5 mt-4 space-x-6">
-          {/* Add button */}
+
+        <View className="flex-row mt-4 space-x-4 gap-2 self-start">
           <TouchableOpacity
-            onPress={() => {
-              console.log('Add button pressed');
-            }}
+            onPress={() => setShowModal(true)} // ✅ OPEN MODAL
             className="bg-gray-800 px-4 py-2 rounded-xl flex-row items-center"
           >
             <Plus color="white" size={18} />
             <Text className="text-white font-semibold ml-2">Add</Text>
           </TouchableOpacity>
-
 
           <TouchableOpacity
             onPress={() => {
@@ -89,8 +112,6 @@ const AlbumPage = () => {
             <Text className="text-white font-semibold ml-2">Edit</Text>
           </TouchableOpacity>
         </View>
-
-
       </View>
 
       {/* Danh sách bài hát */}
@@ -100,20 +121,23 @@ const AlbumPage = () => {
         <FlatList
           data={albumSongs}
           renderItem={({ item, index }) => (
-            <SongCard
-              song={item}
-              index={index}
-              onPress={() => playSong(item)}
-            />
+            <SongCard song={item} index={index} onPress={() => playSong(item)} />
           )}
           ItemSeparatorComponent={() => <View className="h-1" />}
           showsVerticalScrollIndicator={false}
         />
       ) : (
         <View className="py-10 items-center">
-          <Text className="text-gray-500 text-center text-base">No songs found in this playlists</Text>
+          <Text className="text-gray-500 text-center text-base">
+            No songs found in this playlist
+          </Text>
         </View>
       )}
+      <SelectSongsModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleAddSongs}
+      />
     </View>
   );
 };

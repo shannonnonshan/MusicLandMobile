@@ -1,6 +1,8 @@
 import { baseURL } from '@/axios/platform.api';
 import { getPlaylists } from '@/axios/playlist';
 import { Playlist } from '@/contexts/MusicContext';
+// import { useDeviceId } from '@/hooks/useDeviceId';
+import { useDeviceId } from '@/contexts/DeviceContext';
 import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -13,6 +15,7 @@ import {
   Text,
   View
 } from 'react-native';
+
 import Animated, { SlideInLeft } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CreateScreen from './(modal)/create'; // chỉnh đường dẫn đúng
@@ -22,17 +25,23 @@ export default function ListPlaylistView() {
   const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
   const screenHeight = Dimensions.get('window').height;
+  const { deviceId, loading } = useDeviceId();
+  useEffect(() => {
+      // console.log('deviceId:', deviceId);
+    }, [deviceId]);
 
   // Hàm load playlist, có thể gọi lại khi cần reload
   const loadPlaylists = async () => {
     try {
-      const data = await getPlaylists();
+      if (loading) return null;
+      const data = await getPlaylists(deviceId);
       setPlaylists(data);
     } catch (err) {
       console.error('Failed to fetch playlists:', err);
     }
   };
-
+  
+  
   useEffect(() => {
     loadPlaylists();
   }, []);
@@ -41,21 +50,20 @@ export default function ListPlaylistView() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#121212' }}>
       {/* Header */}
       <View style={{ height: 66, paddingBottom: 8, position: 'relative', marginBottom: 12, justifyContent: 'center' }}>
-        <Pressable
-          onPress={() => router.back()}
-          style={{
-            position: 'absolute',
-            left: 20,
-            top: '50%',
-            transform: [{ translateY: -10 }],
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            padding: 8,
-            borderRadius: 8,
-          }}
-        >
-          <Entypo name="chevron-small-left" size={20} color="white" />
-        </Pressable>
-
+            <Pressable
+              onPress={() => router.back()}
+                style={{
+                  position: 'absolute',
+                  left: 20,
+                  top: '50%',
+                  transform: [{ translateY: -10 }],
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  padding: 4,
+                  borderRadius: 8,
+                }}
+              >
+              <Entypo name="chevron-small-left" size={25} color="white" />
+            </Pressable>
         <View style={{ position: 'absolute', top: '50%', left: 0, right: 0, alignItems: 'center', transform: [{ translateY: -10 }] }}>
           <Text style={{ color: 'white', fontSize: 18, fontWeight: '600' }}>Your Playlist</Text>
         </View>

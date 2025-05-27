@@ -1,5 +1,6 @@
 import { createPlaylist } from '@/axios/playlist';
-import { useDeviceId } from '@/hooks/useDeviceId';
+// import { useDeviceId } from '@/hooks/useDeviceId';
+import { useDeviceId } from '@/contexts/DeviceContext';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
@@ -23,10 +24,11 @@ const CreateScreen = ({
 }) => {
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const deviceId = useDeviceId();
+  const { deviceId, loading } = useDeviceId();
 
   useEffect(() => {
     console.log('deviceId:', deviceId);
+    
   }, [deviceId]);
 
   const pickImage = async () => {
@@ -46,7 +48,7 @@ const CreateScreen = ({
       Alert.alert('Missing Information', 'Please enter a playlist name.');
       return;
     }
-
+    if (loading) return null;
     if (!deviceId) {
       Alert.alert('Device ID not available.');
       return;

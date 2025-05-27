@@ -70,3 +70,32 @@ export async function getAlbumTracks(albumId) {
     songs
   };
 }
+
+export const searchTracksByIds = async (ids) => {
+  try {
+    const trackPromises = ids.map((id) =>
+      axios.get(`https://api.deezer.com/track/${id}`)
+    );
+
+    const responses = await Promise.all(trackPromises);
+
+    const tracks = responses.map((res) => {
+      const track = res.data;
+      return {
+        id: track.id,
+        title: track.title,
+        artist: track.artist?.name || 'Unknown Artist',
+        album: track.album?.title || 'Unknown Album',
+        duration: track.duration || 0,
+        liked: false,
+        thumbnail: track.album?.cover_medium || '',
+        uri: track.preview || ''
+      };
+    });
+
+    return tracks;
+  } catch (error) {
+    console.error('Error fetching tracks by IDs:', error);
+    throw error;
+  }
+};

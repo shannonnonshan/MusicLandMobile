@@ -1,5 +1,6 @@
 import { fetchPlaylists } from '@/axios/playlist';
 import { useMusicContext } from '@/contexts/MusicContext';
+import { useDeviceId } from '@/hooks/useDeviceId';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -43,6 +44,7 @@ const HomePage = () => {
   const { songs = [], playSong } = useMusicContext();
   const [featuredPlaylists, setFeaturedPlaylists] = useState<FeaturedPlaylist[]>([]);
   const recentSongs = songs.slice(0, 4);
+  const deviceId = useDeviceId();
   
 
       useEffect(() => {
@@ -99,7 +101,12 @@ const HomePage = () => {
           Listen to the latest hits and your favorite artists
         </Text>
         <Button
-          onPress={() => router.push('/playlist/list-playlist')}
+          onPress={() => router.push({
+                pathname: '/playlist/list-playlist',
+                params: { deviceId:  deviceId},
+              })
+            
+          }
           style={{ backgroundColor: 'white' }}
         >
           <Play color="#7C3AED" size={16} />
