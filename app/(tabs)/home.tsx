@@ -75,28 +75,42 @@ const HomePage = () => {
     getPlaylists();
   }, []);
 
-  const loadRecentSongs = async () => {
-    try {
-      const recentJSON = await AsyncStorage.getItem('recentSongs');
-      let recent: Song[] = recentJSON ? JSON.parse(recentJSON) : [];
+ const loadRecentSongs = async () => {
+  try {
+    const recentJSON = await AsyncStorage.getItem('recentSongs');
+    let recent: Song[] = recentJSON ? JSON.parse(recentJSON) : [];
 
-      if (recent.length < 4) {
-        const fallback = await fetchTop4Tracks();
-        const fallbackFiltered = fallback.filter(
-          (song: any) => !recent.some((r) => r.id === song.id)
-        );
-        recent = [...recent, ...fallbackFiltered].slice(0, 4);
-      } else {
-        recent = recent.slice(0, 4);
-      }
+    if (recent.length < 4) {
+      const res = await fetchTop4Tracks() as { tracks: any[] };
+      const fallback: Song[] = res.tracks.map((track) => ({
+        id: track.id,
+        title: track.title,
+        artist: track.artist?.name || 'Unknown Artist',
+        album: track.album?.title || 'Unknown Album',
+        duration: track.duration || 0,
+        liked: false,
+        thumbnail: track.album?.cover || '',
+        uri: track.preview || '',
+        genre: track.genre || '',
+        releaseYear: track.release_year || '',
+      }));
 
-      setRecentSongs(recent);
-    } catch (err) {
-      console.error('Lỗi khi tải bài hát nghe gần đây:', err);
-    } finally {
-      setIsRecentLoading(false);
+      const fallbackFiltered = fallback.filter(
+        (song: Song) => !recent.some((r) => r.id === song.id)
+      );
+      recent = [...recent, ...fallbackFiltered].slice(0, 4);
+    } else {
+      recent = recent.slice(0, 4);
     }
-  };
+
+    setRecentSongs(recent); // đúng biến recent, không phải recentSongs
+  } catch (err) {
+    console.error('Lỗi khi tải bài hát nghe gần đây:', err);
+  } finally {
+    setIsRecentLoading(false);
+  }
+};
+
 
   useEffect(() => {
     loadRecentSongs();
