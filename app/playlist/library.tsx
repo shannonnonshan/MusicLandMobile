@@ -39,7 +39,7 @@ const AlbumPage = () => {
         ]);
 
         setAlbumTitle(playlist.name);
-        setAlbumSongs(songs as Song[]);
+        setAlbumSongs(songs as any);
         setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
       } catch (error) {
         console.error('Error fetching album songs or playlist detail:', error);
@@ -113,7 +113,8 @@ const AlbumPage = () => {
         </View>
 
         {/* Danh sách bài hát */}
-        {loading ? (
+        {loading ? 
+        (
           <ActivityIndicator size="large" color="#7C3AED" className="mt-20" />
         ) : albumSongs.length > 0 ? (
           <FlatList

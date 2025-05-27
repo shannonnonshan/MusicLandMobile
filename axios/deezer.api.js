@@ -49,6 +49,17 @@ export async function getTopCharts() {
     albums: data.albums.data
   };
 };
+export const fetchTop4Tracks = async () => {
+  try {
+    const url = 'https://api.deezer.com/chart/0/tracks?limit=4';
+    const response = await axios.get(url);
+    const data = response.data;
+    return {tracks: data.data};
+  } catch (err) {
+    console.error('Lỗi fetch từ Deezer:', err);
+    return [];
+  }
+};
 export async function getAlbumTracks(albumId) {
   const res = await axios.get(`https://api.deezer.com/album/${albumId}`);
   const data = res.data;
@@ -91,28 +102,11 @@ export const searchTracksByIds = async (ids) => {
         thumbnail: track.album?.cover_medium || '',
         uri: track.preview || ''
       };
-    });
+      });
 
     return tracks;
   } catch (error) {
     console.error('Error fetching tracks by IDs:', error);
     throw error;
-  }
-};
-export const fetchTop4Tracks = async () => {
-  try {
-    const res = await fetch('https://api.deezer.com/chart/0/tracks?limit=4');
-    const json = await res.json();
-
-    return json.data.map((track) => ({
-      id: track.id.toString(),
-      title: track.title,
-      artist: track.artist.name,
-      thumbnail: track.album.cover_medium,
-      uri: track.preview || ''
-    }));
-  } catch (err) {
-    console.error('Lỗi fetch từ Deezer:', err);
-    return [];
   }
 };
