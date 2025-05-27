@@ -40,7 +40,7 @@ const PlayerPage = () => {
         </Text>
         <TouchableOpacity
           className="bg-purple-700 px-4 py-2 rounded"
-          onPress={() => router.push({
+          onPress={() => router.replace({
                 pathname: '/playlist/list-playlist',
                 params: { deviceId:  deviceId.deviceId},
               })}  

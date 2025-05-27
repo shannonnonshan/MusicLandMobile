@@ -3,7 +3,7 @@ import { baseURL } from '@/axios/platform.api';
 import { addSongToPlaylist, getPlaylistTracks } from '@/axios/playlist';
 import SongCard from '@/components/SongCard';
 import { Song, useMusicContext } from '@/contexts/MusicContext';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Pencil, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 
@@ -70,14 +70,14 @@ const AlbumPage = () => {
 
   return (
     <>
-      <Stack.Screen
+      {/* <Stack.Screen
         options={{
           title: albumTitle || 'Album',
           headerTitleStyle: { color: '#fff' },
           headerTintColor: '#fff',
           headerStyle: { backgroundColor: '#111' },
         }}
-      />
+      /> */}
 
       <View className="flex-1 bg-black px-4 py-6 pb-20">
         {/* Header */}

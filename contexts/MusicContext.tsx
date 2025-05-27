@@ -117,8 +117,9 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
           await sound.unloadAsync();
           setSound(null);
         }
-
+        console.log(currentSong)
         if (currentSong) {
+          
           const { sound: newSound } = await Audio.Sound.createAsync(
             { uri: currentSong.uri },
             { shouldPlay: isPlaying, volume }
