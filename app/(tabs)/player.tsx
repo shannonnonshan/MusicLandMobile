@@ -1,6 +1,7 @@
 import AlbumVisualizer from '@/components/AlbumVisualizer';
 import { Slider } from '@/components/ui/slider';
 import { useMusicContext } from '@/contexts/MusicContext';
+import { useDeviceId } from '@/hooks/useDeviceId';
 import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
@@ -13,6 +14,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 const PlayerPage = () => {
   const router = useRouter();  // Dùng router từ expo-router
+  const deviceId = useDeviceId();
   const {
     currentSong,
     isPlaying,
@@ -38,7 +40,10 @@ const PlayerPage = () => {
         </Text>
         <TouchableOpacity
           className="bg-purple-700 px-4 py-2 rounded"
-          onPress={() => router.push('/playlist/list-playlist')}  // dùng router.push thay navigate
+          onPress={() => router.push({
+                pathname: '/playlist/list-playlist',
+                params: { deviceId:  deviceId},
+              })}  // dùng router.push thay navigate
         >
           <Text className="text-white text-center">Go to Library</Text>
         </TouchableOpacity>

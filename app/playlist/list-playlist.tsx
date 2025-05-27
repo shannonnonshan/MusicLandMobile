@@ -58,11 +58,13 @@ export default function ListPlaylistView() {
                   top: '50%',
                   transform: [{ translateY: -10 }],
                   backgroundColor: 'rgba(255,255,255,0.1)',
-                  padding: 4,
+                  padding: 8,
                   borderRadius: 8,
+                  zIndex: 100,
                 }}
+                hitSlop={10}
               >
-              <Entypo name="chevron-small-left" size={25} color="white" />
+              <Entypo name="chevron-small-left" size={20} color="white" />
             </Pressable>
         <View style={{ position: 'absolute', top: '50%', left: 0, right: 0, alignItems: 'center', transform: [{ translateY: -10 }] }}>
           <Text style={{ color: 'white', fontSize: 18, fontWeight: '600' }}>Your Playlist</Text>
@@ -78,6 +80,7 @@ export default function ListPlaylistView() {
             backgroundColor: 'rgba(255,255,255,0.1)',
             padding: 8,
             borderRadius: 8,
+            zIndex: 100,
           }}
         >
           <Entypo name="add-to-list" size={20} color="white" />
@@ -89,8 +92,19 @@ export default function ListPlaylistView() {
         contentContainerStyle={{ padding: 16, paddingBottom: 80, minHeight: screenHeight }}
       >
         {playlists.map((playlist, index) => (
+          <Pressable
+              key={playlist._id}
+              onPress={() =>
+                router.push({
+                  pathname: '/playlist/library',
+                  params: { playlistId: playlist._id.toString() },
+                })}
+              style={({ pressed }) => ({
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                  borderRadius: 12,
+                })}
+            >
           <Animated.View
-            key={playlist._id}
             entering={SlideInLeft.delay(300 + index * 100)}
             style={{
               backgroundColor: '#555',
@@ -127,6 +141,7 @@ export default function ListPlaylistView() {
               <Entypo name="controller-play" size={18} color="white" />
             </Pressable>
           </Animated.View>
+          </Pressable>
         ))}
       </ScrollView>
 

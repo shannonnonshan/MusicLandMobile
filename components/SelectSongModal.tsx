@@ -1,6 +1,7 @@
 import { getTopCharts, searchMulti } from '@/axios/deezer.api';
 import SongPlaylistCard from '@/components/SongPlaylistCard';
 import type { Song } from '@/contexts/MusicContext';
+import { Entypo } from '@expo/vector-icons'; // 👈 dùng cho icon "cancel"
 import { useEffect, useState } from 'react';
 import {
   Modal,
@@ -78,6 +79,15 @@ export default function SelectSongsModal({ visible, onClose, onConfirm }: Props)
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+              <Entypo name="chevron-left" size={20} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Add Song to Playlist</Text>
+          </View>
+
+          {/* Search */}
           <TextInput
             style={styles.input}
             placeholder="Search songs..."
@@ -87,6 +97,7 @@ export default function SelectSongsModal({ visible, onClose, onConfirm }: Props)
           />
           <Text style={styles.count}>Selected: {selectedSongs.length} song(s)</Text>
 
+          {/* Songs List */}
           <ScrollView style={{ marginBottom: 80 }}>
             {trackResults.map((track, index) => {
               const isSelected = selectedSongs.find((s) => s.id === track.id);
@@ -105,12 +116,9 @@ export default function SelectSongsModal({ visible, onClose, onConfirm }: Props)
             })}
           </ScrollView>
 
+          {/* Confirm Button */}
           <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
             <Text style={styles.confirmText}>Confirm Selection</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={{ color: '#fff', textAlign: 'center' }}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -119,7 +127,7 @@ export default function SelectSongsModal({ visible, onClose, onConfirm }: Props)
 }
 
 const STATUS_BAR_HEIGHT =
-  Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : 0;
+  Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 0 : 0;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -135,6 +143,23 @@ const styles = StyleSheet.create({
     paddingTop: STATUS_BAR_HEIGHT,
     paddingHorizontal: 16,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    justifyContent: 'space-between'
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginRight: 110
+  },
+  cancelButton: {
+    padding: 8,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 8,
+  },
   input: {
     color: 'white',
     backgroundColor: '#222',
@@ -147,7 +172,8 @@ const styles = StyleSheet.create({
   count: {
     color: 'white',
     fontSize: 16,
-    marginTop: 10,
+    marginTop: 20,
+    marginBottom: 10
   },
   selected: {
     borderColor: '#4ade80',
@@ -166,9 +192,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
-  },
-  closeButton: {
-    padding: 10,
-    alignSelf: 'center',
   },
 });

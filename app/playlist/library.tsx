@@ -6,14 +6,15 @@ import { Song, useMusicContext } from '@/contexts/MusicContext';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Pencil, Plus } from 'lucide-react-native';
 import { useEffect, useLayoutEffect, useState } from 'react';
+
+import SelectSongsModal from '@/components/SelectSongModal';
 import {
   ActivityIndicator,
   FlatList,
   Image, Text,
   TouchableOpacity,
   View
-} from 'react-native'; // ✅ IMPORT MODAL
-import SelectSongsModal from './(modal)/selectSong';
+} from 'react-native';
 
 const AlbumPage = () => {
   const { playSong } = useMusicContext();
@@ -21,31 +22,37 @@ const AlbumPage = () => {
   const navigation = useNavigation();
 
   const [albumTitle, setAlbumTitle] = useState('');
-  const [albumSongs, setAlbumSongs] = useState([]);
+  const [albumSongs, setAlbumSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [albumThumbnail, setAlbumThumbnail] = useState('');
   const [showModal, setShowModal] = useState(false); // ✅ STATE MỞ MODAL
 
   useEffect(() => {
-    if (!playlistId) return;
+  if (!playlistId) return;
 
-    const fetchAlbumSongs = async () => {
-      try {
-        setLoading(true);
-        const playlist = await getPlaylistTracks(playlistId as string);
-        const songs = await searchTracksByIds(playlist.songs);
-        setAlbumTitle(playlist.name);
-        setAlbumSongs(songs);
-        setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
-      } catch (error) {
-        console.error('Error fetching album songs or playlist detail:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchAlbumSongs = async () => {
+    try {
+      setLoading(true);
+      const playlist = await getPlaylistTracks(playlistId as string);
 
-    fetchAlbumSongs();
-  }, [playlistId]);
+      // Gọi fetch song song
+      const [songs] = await Promise.all([
+        searchTracksByIds(playlist.songs),
+      ]);
+
+      setAlbumTitle(playlist.name);
+      setAlbumSongs(songs as Song[]);
+      setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
+    } catch (error) {
+      console.error('Error fetching album songs or playlist detail:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAlbumSongs();
+}, [playlistId]);
+
 
   useLayoutEffect(() => {
     if (albumTitle) {
@@ -72,8 +79,8 @@ const AlbumPage = () => {
       console.log('Add songs result:', result);
       setShowModal(false);
       const playlist = await getPlaylistTracks(playlistId as string);
-      const songPlaylist = await searchTracksByIds(playlist.songs) || null;
-      setAlbumSongs(songPlaylist);
+      const songPlaylist = await searchTracksByIds(playlist.songs);
+      setAlbumSongs(songPlaylist as Song[]);
 
     } catch (error) {
       console.error('Failed to add songs:', error);
@@ -125,6 +132,7 @@ const AlbumPage = () => {
           )}
           ItemSeparatorComponent={() => <View className="h-1" />}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 85 }}
         />
       ) : (
         <View className="py-10 items-center">
