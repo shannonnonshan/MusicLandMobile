@@ -17,7 +17,7 @@ const AlbumCard: React.FC<AlbumProps> = ({ album, onPress }) => {
         params: { albumId: album.id.toString() },
         })}
       style={{
-              width: '10%',
+              width: '50%',
               backgroundColor: '#1F2937',
               borderRadius: 12,
               padding: 10,

@@ -31,7 +31,7 @@ export default function RootLayout() {
             <Stack.Screen name="playlist/(modal)/create" options={{ presentation: 'modal', headerShown: false }} />
           </Stack>
 
-          {!hideMiniPlayer && <MiniPlayer />}
+          {!hideMiniPlayer && <MiniPlayer/>}
           <StatusBar style="auto" />
         </View>
       </MusicProvider>

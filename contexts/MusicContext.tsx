@@ -203,7 +203,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
       recent = recent.slice(0, 10);
 
       await AsyncStorage.setItem(key, JSON.stringify(recent));
-      console.log('Đã lưu bài hát nghe gần đây:', recent);
+      console.log('Đã lưu bài hát nghe gần đây:', recent[0].title);
     } catch (err) {
       console.error('Lỗi khi lưu bài hát nghe gần đây:', err);
     }

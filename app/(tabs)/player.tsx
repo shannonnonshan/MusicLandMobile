@@ -79,7 +79,11 @@ const PlayerPage = () => {
       {/* Album Cover */}
       <View className="w-64 h-64 mx-auto rounded-lg overflow-hidden shadow-lg mb-8">
         <Image
-          source={{ uri: currentSong.thumbnail || '/assets/images/MSlogo.png' }}
+          source={
+            currentSong.thumbnail?.startsWith('http')
+                ? { uri: currentSong.thumbnail }
+                : require('../../assets/images/MSlogo.png')
+            }
           className="w-full h-full rounded-lg"
           resizeMode="cover"
         />

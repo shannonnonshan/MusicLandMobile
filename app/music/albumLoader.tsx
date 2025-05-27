@@ -3,8 +3,7 @@ import SongCard from '@/components/SongCard';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
-
+import { ActivityIndicator, Dimensions, FlatList, Image, Text, View } from 'react-native';
 const AlbumPage = () => {
   const { playSong } = useMusicContext();
   const { albumId } = useLocalSearchParams();
@@ -13,7 +12,7 @@ const AlbumPage = () => {
   const [albumSongs, setAlbumSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [albumThumbnail, setAlbumThumbnail] = useState('');
-
+  const screenHeight = Dimensions.get('window').height; // Assuming a fixed height for simplicity, you can use Dimensions API for dynamic height
   useEffect(() => {
     if (!albumId) return;
 
@@ -46,7 +45,7 @@ const AlbumPage = () => {
         }
     }, [navigation, albumTitle])
   return (
-    <View className="flex-1 bg-black px-4 py-6 pb-20">
+    <View className="flex-1 bg-black px-4 py-12 pb-20 ">
       {/* Header */}
       <View className="flex-col items-center mb-6 justify-between">
            <Image
@@ -57,16 +56,19 @@ const AlbumPage = () => {
       </View>
       {/* Danh sách bài hát */}
       {loading ? (
-        <ActivityIndicator size="large" color="#7C3AED" className="mt-20" />
+        <ActivityIndicator size="large" color="#7C3AED" className="mt-20 pb-12" />
       ) : albumSongs.length > 0 ? (
+       
         <FlatList
           data={albumSongs}
+          contentContainerStyle={{ paddingBottom: 80, minHeight: screenHeight - 200 }}
           renderItem={({ item, index }) => (
             <SongCard
               song={item}
               index={index}
               onPress={() => playSong(item)}
             />
+          
           )}
           ItemSeparatorComponent={() => <View className="h-1" />}
           showsVerticalScrollIndicator={false}

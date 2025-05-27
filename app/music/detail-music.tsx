@@ -1,10 +1,13 @@
+// TabMusicPlayingScreen.js (hoặc .tsx)
+
+import { extractTrackId, fetchLyricsFromDeezer } from '@/axios/deezer.api';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-
+import { Platform, Pressable, StatusBar as RNStatusBar, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const loadFonts = () =>
   Font.loadAsync({
@@ -18,94 +21,152 @@ export const options = {
 export default function TabMusicPlayingScreen() {
   const router = useRouter();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [lyrics, setLyrics] = useState('');
+  const [loadingLyrics, setLoadingLyrics] = useState(false);
+
   const { currentSong } = useMusicContext();
+  const arlCookie =
+    '44f8df9da9be438e3f451a9b6df8c78dda43402d92f2ff263182b1bbed4ef568e76fcc3f171ec99475023939c62792946f5e135f0872bd0a427f1d84f0ea73edb170a51f6701b803aa717b6536f0788bf61b6124abeb97fcfd5fceb87aaaade9';
 
   useEffect(() => {
     loadFonts().then(() => setFontsLoaded(true));
   }, []);
 
+  useEffect(() => {
+    const loadLyrics = async () => {
+      if (!currentSong?.id) return;
+      const trackId = extractTrackId(currentSong.id);
+      if (!trackId) return;
+
+      setLoadingLyrics(true);
+      try {
+        const res = await fetchLyricsFromDeezer(trackId, arlCookie);
+        setLyrics(res);
+      } catch (err) {
+        setLyrics('Failed to load lyrics.');
+      } finally {
+        setLoadingLyrics(false);
+      }
+    };
+
+    loadLyrics();
+  }, [currentSong]);
+
   if (!fontsLoaded) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#191A1F]">
-        <Text className="text-white text-lg">Loading...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
+        <Text style={[styles.lyricsText, { fontFamily: 'Lexend-SemiBold' }]}>
+          {loadingLyrics
+            ? 'Loading lyrics...'
+            : lyrics || 'There are no lyrics available for this song.'}
+        </Text>
+      </ScrollView>
 
-
-      <View className="flex-1 bg-[#191A1F] p-4">
-        {/* Scrollable Lyrics */}
-        <ScrollView
-          className="flex-1 mx-4"
-          contentContainerStyle={{ paddingBottom: 24 }}
-        >
-          <Text
-            className="text-white text-lg leading-7 tracking-wide"
-            style={{ fontFamily: 'Lexend-SemiBold' }}
-          >
-            {`oh lost\nlost in the words that we scream\n
-I don't even wanna do this anymore\n
-'cause you already know\n
-What you mean to me\n
-And our love's the only one\n
-worth fighting for\n
-Wherever you go\n
-that's where I'll follow\n
-Nobody's promised tomorrow\n
-So I'ma love you every night like\n
-It's the last night\n
-Like it's the last night\n
-If the world was ending\n
-I'd wanna be next to you\n
-If the party was over\n
-And our time on Earth was through\n
-I'd wanna hold you just for a while\n
-And die with a smile\n
-If the world was ending\n
-I'd wanna be next to you`}
-          </Text>
-        </ScrollView>
-
-        <View className="h-[66px] pb-2 relative mb-3">
-          <Pressable
-            onPress={() => router.back()}
-            className="absolute left-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2"
+      <View style={styles.footer}>
+        <TouchableOpacity
+            onPress={() => {
+              if (router.canGoBack && router.canGoBack()) {
+                router.back();
+              } else {
+                router.push('/(tabs)/home');
+              }
+            }}
+            style={styles.backButton}
           >
             <Entypo name="chevron-small-left" size={20} color="white" />
-          </Pressable>
+          </TouchableOpacity>
 
-          {/* Song Title & Artist */}
-          <View className="absolute top-1/2 left-0 right-0 -translate-y-1/2 items-center">
-            <Text className="text-white text-lg font-bold">
-              {currentSong?.title}
-            </Text>
-            <Text className="text-[#CCCCCC] text-base">
-              {currentSong?.artist}
-            </Text>
-          </View>
-
-          {/* Menu Button */}
-          <Pressable className="absolute right-5 top-1/2 -translate-y-1/2 rounded-lg bg-white/10 p-2">
-            <Entypo name="add-to-list" size={20} color="white" />
-          </Pressable>
+        <View style={styles.titleContainer}>
+          <Text style={styles.songTitle}>{currentSong?.title}</Text>
+          <Text style={styles.songArtist}>{currentSong?.artist}</Text>
         </View>
+
+        <Pressable style={styles.addToListButton}>
+          <Entypo name="add-to-list" size={20} color="white" />
+        </Pressable>
       </View>
-    </>
+    </SafeAreaView>
   );
 }
+const STATUS_BAR_HEIGHT = Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : 0;
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#191A1F',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#191A1F',
+    padding: 16,
+    paddingTop: STATUS_BAR_HEIGHT + 10,
+  },
+  scrollView: {
+    flex: 1,
+    marginHorizontal: 16,
+  },
+  lyricsText: {
+    color: 'white',
+    fontSize: 16,
+    lineHeight: 28,
+    letterSpacing: 0.5,
+  },
+  footer: {
+    height: 66,
+    paddingBottom: 8,
+    marginBottom: 12,
+    position: 'relative',
+  },
+  backButton: {
     position: 'absolute',
+    left: 20,
+    top: '50%',
+    transform: [{ translateY: -12 }],
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    padding: 8,
+    borderRadius: 8,
   },
   titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    transform: [{ translateY: -12 }],
+  },
+  songTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  songArtist: {
+    color: '#CCCCCC',
+    fontSize: 14,
+  },
+  addToListButton: {
+    position: 'absolute',
+    right: 20,
+    top: '50%',
+    transform: [{ translateY: -12 }],
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    padding: 8,
+    borderRadius: 8,
   },
 });

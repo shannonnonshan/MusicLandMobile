@@ -114,7 +114,7 @@ export default function TabSearchScreen() {
      
      
       {/* Kết quả tìm kiếm */}
-      <ScrollView style={{marginBottom: '30%'}}>
+      <ScrollView style={{marginBottom: '40%'}}>
         {albumResults.length > 0 && (
               <>
                 <Text className="text-white text-xl font-bold px-4 mt-6 mb-2">Albums</Text>
