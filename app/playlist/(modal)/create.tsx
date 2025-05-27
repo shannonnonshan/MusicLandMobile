@@ -1,6 +1,7 @@
 import { createPlaylist } from '@/axios/playlist';
 // import { useDeviceId } from '@/hooks/useDeviceId';
 import { useDeviceId } from '@/contexts/DeviceContext';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
@@ -14,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+
 
 const CreateScreen = ({
   onClose,
@@ -32,16 +34,29 @@ const CreateScreen = ({
   }, [deviceId]);
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: false, // tắt editing của ImagePicker
+    quality: 1,
+  });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
-  };
+  if (!result.canceled) {
+    const asset = result.assets[0];
+
+    const manipulated = await ImageManipulator.manipulateAsync(
+      asset.uri,
+      [
+        { resize: { width: 300, height: 200 } },
+      ],
+      {
+        compress: 0.8,
+        format: ImageManipulator.SaveFormat.JPEG,
+      }
+    );
+
+    setImage(manipulated.uri); // cập nhật URI đã xử lý
+  }
+};
 
   const handleCreatePlaylist = async () => {
     if (!name.trim()) {

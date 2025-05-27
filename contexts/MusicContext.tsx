@@ -5,6 +5,7 @@ import {
   saveSongsToStorage
 } from '@/lib/musicStorage';
 import { formatTime } from '@/lib/timeUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 export interface Song {
@@ -188,6 +189,23 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     setCurrentSong((prev) => (prev?.id === song.id ? prev : song));
     setIsPlaying(true);
   }
+  try {
+      const key = 'recentSongs';
+      const recentJSON = await AsyncStorage.getItem(key);
+      let recent: Song[] = recentJSON ? JSON.parse(recentJSON) : [];
+
+      // Xoá trùng nếu có
+      recent = recent.filter((s) => s.id !== song.id);
+      // Thêm lên đầu
+      recent.unshift(song);
+      // Giới hạn 10 bài gần nhất
+      recent = recent.slice(0, 10);
+
+      await AsyncStorage.setItem(key, JSON.stringify(recent));
+      console.log('Đã lưu bài hát nghe gần đây:', recent);
+    } catch (err) {
+      console.error('Lỗi khi lưu bài hát nghe gần đây:', err);
+    }
   };
 
   async function pauseSong() {

@@ -1,11 +1,14 @@
+import { fetchTop4Tracks } from '@/axios/deezer.api';
 import { fetchPlaylists } from '@/axios/playlist';
-import { useMusicContext } from '@/contexts/MusicContext';
-import { useDeviceId } from '@/hooks/useDeviceId';
+import { useDeviceId } from '@/contexts/DeviceContext';
+import { Song, useMusicContext } from '@/contexts/MusicContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Disc, Headphones, Music, Play } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Image, Platform, StatusBar as RNStatusBar, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInLeft } from 'react-native-reanimated';
+
 // Tạo một Button native đơn giản tương tự Button web bạn dùng
 const Button = ({ onPress, children, style }: any) => (
   <TouchableOpacity
@@ -43,9 +46,9 @@ const HomePage = () => {
   const router = useRouter();
   const { songs = [], playSong } = useMusicContext();
   const [featuredPlaylists, setFeaturedPlaylists] = useState<FeaturedPlaylist[]>([]);
-  const recentSongs = songs.slice(0, 4);
   const deviceId = useDeviceId();
-  
+  const [recentSongs, setRecentSongs] = useState<Song[]>([]);
+
 
       useEffect(() => {
         const getData = async () => {
@@ -67,6 +70,36 @@ const HomePage = () => {
 
         getData();
       }, []);
+  const loadRecentSongs = async () => {
+  try {
+    const recentJSON = await AsyncStorage.getItem('recentSongs');
+    let recent: Song[] = recentJSON ? JSON.parse(recentJSON) : [];
+
+    if (recent.length < 4) {
+      const fallback = await fetchTop4Tracks(); // lấy thêm
+      // Loại trùng
+      const fallbackFiltered = fallback.filter(
+        (song: any) => !recent.some((r) => r.id === song.id)
+      );
+      recent = [...recent, ...fallbackFiltered].slice(0, 4); // đủ 4
+    }
+    else{
+      // Giới hạn 4 bài hát
+      recent = recent.slice(0, 4);
+    }
+
+    setRecentSongs(recent);
+  } catch (err) {
+    console.error('Lỗi khi tải bài hát nghe gần đây:', err);
+  }
+};
+
+useEffect(() => {
+  loadRecentSongs();
+}, []);
+
+
+      
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,25 +125,25 @@ const HomePage = () => {
           borderRadius: 16,
           padding: 20,
           marginBottom: 24,
-          backgroundColor: '#7C3AED',
+          backgroundColor: '#F72798',
           overflow: 'hidden',
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 8 }}>Discover New Music</Text>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 8 }}>Your Playlist</Text>
         <Text style={{ fontSize: 14, color: '#E0E0E0', marginBottom: 16 }}>
-          Listen to the latest hits and your favorite artists
+          Listen to your customised playlists and discover new tracks tailored to your taste.
         </Text>
         <Button
           onPress={() => router.push({
                 pathname: '/playlist/list-playlist',
-                params: { deviceId:  deviceId},
+                params: { deviceId:  deviceId.deviceId},
               })
             
           }
           style={{ backgroundColor: 'white' }}
         >
-          <Play color="#7C3AED" size={16} />
-          <Text style={{ color: '#7C3AED', fontWeight: '600', marginLeft: 8 }}>Start Listening</Text>
+          <Play color="#F57D1F" size={16} />
+          <Text style={{ color: '#F57D1F', fontWeight: '600', marginLeft: 8 }}>Go to your playlist</Text>
         </Button>
       </Animated.View>
 
@@ -118,7 +151,7 @@ const HomePage = () => {
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
         <Disc size={20} color="white" />
         <Text style={{ fontSize: 18, fontWeight: '600', color: 'white', marginLeft: 8 }}>
-          Recently Played
+          Reccommendation
         </Text>
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
@@ -136,9 +169,14 @@ const HomePage = () => {
             activeOpacity={0.7}
           >
             <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1668791871017-989a35d2e0cf' }}
+              source={
+                    song.thumbnail?.startsWith('http')
+                      ? { uri: song.thumbnail }
+                      : require('../../assets/images/MSlogo.png')
+                  }
               style={{
-                width: '100%',
+                width: 150,
+                height: 150,
                 aspectRatio: 1,
                 borderRadius: 8,
                 marginBottom: 8,
@@ -157,7 +195,7 @@ const HomePage = () => {
       </View>
 
       {/* Featured Playlists */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 24 }}>
         <Music size={20} color="white" />
         <Text style={{ fontSize: 18, fontWeight: '600', color: 'white', marginLeft: 8 }}>
           Featured Playlists
