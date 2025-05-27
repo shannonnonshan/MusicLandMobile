@@ -99,3 +99,20 @@ export const searchTracksByIds = async (ids) => {
     throw error;
   }
 };
+export const fetchTop4Tracks = async () => {
+  try {
+    const res = await fetch('https://api.deezer.com/chart/0/tracks?limit=4');
+    const json = await res.json();
+
+    return json.data.map((track) => ({
+      id: track.id.toString(),
+      title: track.title,
+      artist: track.artist.name,
+      thumbnail: track.album.cover_medium,
+      uri: track.preview || ''
+    }));
+  } catch (err) {
+    console.error('Lỗi fetch từ Deezer:', err);
+    return [];
+  }
+};

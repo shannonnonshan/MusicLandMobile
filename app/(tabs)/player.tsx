@@ -1,7 +1,7 @@
 import AlbumVisualizer from '@/components/AlbumVisualizer';
 import { Slider } from '@/components/ui/slider';
+import { useDeviceId } from '@/contexts/DeviceContext';
 import { useMusicContext } from '@/contexts/MusicContext';
-import { useDeviceId } from '@/hooks/useDeviceId';
 import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
@@ -13,7 +13,7 @@ import {
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 const PlayerPage = () => {
-  const router = useRouter();  // Dùng router từ expo-router
+  const router = useRouter();  
   const deviceId = useDeviceId();
   const {
     currentSong,
@@ -42,8 +42,8 @@ const PlayerPage = () => {
           className="bg-purple-700 px-4 py-2 rounded"
           onPress={() => router.push({
                 pathname: '/playlist/list-playlist',
-                params: { deviceId:  deviceId},
-              })}  // dùng router.push thay navigate
+                params: { deviceId:  deviceId.deviceId},
+              })}  
         >
           <Text className="text-white text-center">Go to Library</Text>
         </TouchableOpacity>
@@ -57,7 +57,7 @@ const PlayerPage = () => {
       <View className="flex-row items-center mb-8">
         <TouchableOpacity
           className="p-2"
-          onPress={() => router.back()}  // dùng router.back() thay navigation.goBack()
+          onPress={() => router.back()}  
         >
           <ChevronDown size={24} color="white" />
         </TouchableOpacity>

@@ -22,7 +22,7 @@ export default function TabSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [trackResults, setTrackResults] = useState<Song[]>([]);
   const [albumResults, setAlbumResults] = useState<Album[]>([]);
-
+  // const screenHeight = Dimensions.get('window').height;
   
   useEffect(() => {
   const delayDebounce = setTimeout(() => {
@@ -114,7 +114,7 @@ export default function TabSearchScreen() {
      
      
       {/* Kết quả tìm kiếm */}
-      <ScrollView style={{marginBottom: 150}}>
+      <ScrollView style={{marginBottom: '30%'}}>
         {albumResults.length > 0 && (
               <>
                 <Text className="text-white text-xl font-bold px-4 mt-6 mb-2">Albums</Text>

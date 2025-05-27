@@ -6,6 +6,7 @@ import { Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import 'react-native-reanimated';
+
 import '../global.css';
 
 export default function RootLayout() {
@@ -25,6 +26,7 @@ export default function RootLayout() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
+             <Stack.Screen name="playlist/library" options={{ headerShown: false }} />
             <Stack.Screen name="music/detail-music" options={{ headerShown: false }} />
             <Stack.Screen name="playlist/list-playlist" options={{ headerShown: false }} />
             <Stack.Screen name="playlist/(modal)/create" options={{ presentation: 'modal', headerShown: false }} />

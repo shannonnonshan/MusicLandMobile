@@ -6,6 +6,7 @@ export const fetchPlaylists = async () => {
 };
 
 export const createPlaylist = async ({ name, deviceId, imageUri }) => {
+  try{
   const formData = new FormData();
   formData.append('name', name);
   formData.append('deviceId', deviceId);
@@ -14,8 +15,6 @@ export const createPlaylist = async ({ name, deviceId, imageUri }) => {
     const fileName = imageUri.split('/').pop() || 'image.jpg';
     const fileType = fileName.split('.').pop();
 
-    // Đọc file base64 để debug nếu cần
-    // const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 });
 
     formData.append('image', {
       uri: imageUri,
@@ -25,13 +24,19 @@ export const createPlaylist = async ({ name, deviceId, imageUri }) => {
   }
     const info = await FileSystem.getInfoAsync(imageUri);
     console.log('File exists:', info.exists, info.uri);
-  const response = await axiosInstance.post('/playlist/create', formData, {
+    const response = await axiosInstance.post('/playlist/create', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-  });
-
-  return response.data;
+  }
+  );
+    console.log('Response:', response.data);
+    return response.data;
+  } catch (error) {
+      console.error('Error creating playlist:', error);
+      throw error;
+    }
+  
 };
 
 export const getPlaylists = async (deviceId) => {

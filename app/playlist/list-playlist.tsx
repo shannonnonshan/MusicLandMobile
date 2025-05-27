@@ -1,8 +1,7 @@
 import { baseURL } from '@/axios/platform.api';
 import { getPlaylists } from '@/axios/playlist';
-import { Playlist } from '@/contexts/MusicContext';
-// import { useDeviceId } from '@/hooks/useDeviceId';
 import { useDeviceId } from '@/contexts/DeviceContext';
+import { Playlist } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
