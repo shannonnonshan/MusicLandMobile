@@ -67,7 +67,7 @@ export default function SelectSongsScreen() {
 
   const handleConfirm = () => {
   router.push({
-    pathname: '/library',
+    pathname: '/library' as any,
     params: {
       selectedSongs: JSON.stringify(selectedSongs), // truyền toàn bộ mảng bài hát
     },

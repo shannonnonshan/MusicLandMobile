@@ -25,7 +25,7 @@ export const createPlaylist = async ({ name, deviceId, imageUri }) => {
   }
     const info = await FileSystem.getInfoAsync(imageUri);
     console.log('File exists:', info.exists, info.uri);
-  const response = await axiosInstance.post('/playlist/create', formData, {
+    const response = await axiosInstance.post('/playlist/create', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
