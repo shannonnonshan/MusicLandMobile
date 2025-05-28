@@ -20,6 +20,7 @@ import '../../global.css';
 export default function TabSearchScreen() {
   const { playSong } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
   const [trackResults, setTrackResults] = useState<Song[]>([]);
   const [albumResults, setAlbumResults] = useState<Album[]>([]);
   // const screenHeight = Dimensions.get('window').height;
@@ -128,7 +129,7 @@ export default function TabSearchScreen() {
                     <AlbumCard
                       key={`album-${album.id}`}
                       album={album}
-                      onPress={() => {}}
+                      onPress={() => {setCurrentAlbum(album)}}
                     />
                   ))}
                 </ScrollView>

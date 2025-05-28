@@ -136,3 +136,31 @@ export async function fetchLyricsFromDeezer(trackId, arlCookie) {
     : '[Không có lời bài hát]';
 }
 
+export const getRandomSongFromAPI = async () => {
+  try {
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    const randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+    const data = await searchTracks(randomChar);
+    const tracks = data.data || [];
+    if (tracks.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * tracks.length);
+    const track = tracks[randomIndex];
+    return {
+      id: String(track.id),
+      title: track.title,
+      artist: track.artist.name,
+      album: track.album.title,
+      duration: track.duration,
+      liked: false,
+      thumbnail: track.album.cover_medium,
+      uri: track.preview,
+      genre: '',       // Deezer API không trả về
+      releaseYear: '', // Deezer API không trả về
+    };
+  } catch (error) {
+    console.error('Error getting random song from API:', error);
+    return null;
+  }
+};
+
+
