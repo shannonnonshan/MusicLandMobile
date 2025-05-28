@@ -1,4 +1,5 @@
 // ... các import không thay đổi
+import { getRandomSongFromAPI } from '@/axios/deezer.api';
 import { useToast } from '@/components/ui/use-toast';
 import {
   saveSongsToStorage
@@ -221,7 +222,15 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const playNextSong = useCallback(async () => {
     const playlistSongs = currentPlaylist?.songs || songs;
-    if (!currentSong || playlistSongs.length === 0) return;
+    if (!currentSong || playlistSongs.length === 0) {
+      const songs = await getRandomSongFromAPI();
+      if (songs) {
+        setTimeout(() => {
+          playSong(songs);
+        }, 50);
+      }
+      return;
+    };
     const currentIndex = playlistSongs.findIndex((s) => s.id === currentSong.id);
     const nextIndex = (currentIndex + 1) % playlistSongs.length;
     await playSong(playlistSongs[nextIndex]);
