@@ -1,13 +1,13 @@
 import { searchTracksByIds } from '@/axios/deezer.api';
 import { baseURL } from '@/axios/platform.api';
 import { addSongToPlaylist, getPlaylistTracks } from '@/axios/playlist';
+import SelectSongsModal from '@/components/SelectSongModal';
 import SongCard from '@/components/SongCard';
 import { Song, useMusicContext } from '@/contexts/MusicContext';
-import { useLocalSearchParams } from 'expo-router';
+import { Entypo } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pencil, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-
-import SelectSongsModal from '@/components/SelectSongModal';
 import {
   ActivityIndicator,
   FlatList,
@@ -18,7 +18,8 @@ import {
 } from 'react-native';
 
 const AlbumPage = () => {
-  const { playSong } = useMusicContext();
+  const router = useRouter();
+  const { playSong, currentPlaylist, setCurrentPlaylist } = useMusicContext();
   const { playlistId } = useLocalSearchParams();
   const [albumTitle, setAlbumTitle] = useState('');
   const [albumSongs, setAlbumSongs] = useState<Song[]>([]);
@@ -34,12 +35,18 @@ const AlbumPage = () => {
         setLoading(true);
         const playlist = await getPlaylistTracks(playlistId as string);
 
-        const [songs] = await Promise.all([
-          searchTracksByIds(playlist.songs),
-        ]);
+        // Lấy chi tiết bài hát từ IDs
+        const songs = await searchTracksByIds(playlist.songs);
 
+        // Cập nhật currentPlaylist với songs chi tiết
+        const updatedPlaylist = {
+          ...playlist,
+          songs: songs,
+        };
+
+        setCurrentPlaylist(updatedPlaylist);
         setAlbumTitle(playlist.name);
-        setAlbumSongs(songs as any);
+        setAlbumSongs(songs as Song[]);
         setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
       } catch (error) {
         console.error('Error fetching album songs or playlist detail:', error);
@@ -60,8 +67,12 @@ const AlbumPage = () => {
       const result = await addSongToPlaylist(playlistId, songIds);
       console.log('Add songs result:', result);
       setShowModal(false);
+
+      // Cập nhật lại danh sách sau khi thêm
       const playlist = await getPlaylistTracks(playlistId as string);
       const songPlaylist = await searchTracksByIds(playlist.songs);
+
+      setCurrentPlaylist({ ...playlist, songs: songPlaylist });
       setAlbumSongs(songPlaylist as Song[]);
     } catch (error) {
       console.error('Failed to add songs:', error);
@@ -70,27 +81,25 @@ const AlbumPage = () => {
 
   return (
     <>
-      {/* <Stack.Screen
-        options={{
-          title: albumTitle || 'Album',
-          headerTitleStyle: { color: '#fff' },
-          headerTintColor: '#fff',
-          headerStyle: { backgroundColor: '#111' },
-        }}
-      /> */}
-
+      {/* Header */}
       <View className="flex-1 bg-black px-4 py-6 pb-20">
-        {/* Header */}
+        <View className="flex-row items-center space-x-2 px-4 py-2 bg-black mt-10">
+          <TouchableOpacity onPress={() => router.back()} className="p-1">
+            <Entypo name="chevron-left" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-white text-2xl font-semibold">
+             {currentPlaylist?.name || 'Playlist'}
+          </Text>
+        </View>
+
         <View className="flex-col items-center mb-6 justify-between">
           <Image
             source={{ uri: albumThumbnail }}
             style={{ width: 200, height: 200, borderRadius: 12 }}
           />
-
           <Text className="text-2xl font-bold text-white mt-4">
             {albumTitle || 'Album'}
           </Text>
-
           <View className="flex-row mt-4 space-x-4 gap-2 self-start">
             <TouchableOpacity
               onPress={() => setShowModal(true)}
@@ -113,8 +122,7 @@ const AlbumPage = () => {
         </View>
 
         {/* Danh sách bài hát */}
-        {loading ? 
-        (
+        {loading ? (
           <ActivityIndicator size="large" color="#7C3AED" className="mt-20" />
         ) : albumSongs.length > 0 ? (
           <FlatList

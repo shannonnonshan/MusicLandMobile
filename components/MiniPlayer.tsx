@@ -13,10 +13,14 @@ export function MiniPlayer({
   bgColor = '#F57D1F',
 }: MiniPlayerProps) {
   const router = useRouter();
-  const { currentSong, isPlaying, playSong, playNextSong } = useMusicContext();
+  const {
+    currentSong,
+    isPlaying,
+    togglePlayPause,
+    playNextSong,
+  } = useMusicContext();
 
-  if (!currentSong) return null; // Không hiển thị nếu chưa có bài nào
-
+  if (!currentSong) return null;
 
   return (
     <TouchableOpacity
@@ -42,10 +46,10 @@ export function MiniPlayer({
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
         <Image
           source={
-                    currentSong.thumbnail?.startsWith('http')
-                      ? { uri: currentSong.thumbnail }
-                      : require('../assets/images/MSlogo.png')
-                  }
+            currentSong.thumbnail?.startsWith('http')
+              ? { uri: currentSong.thumbnail }
+              : require('../assets/images/MSlogo.png')
+          }
           style={{
             width: 40,
             height: 40,
@@ -61,17 +65,14 @@ export function MiniPlayer({
           >
             {currentSong.title}
           </Text>
-          <Text
-            style={{ color: '#ccc', fontSize: 12 }}
-            numberOfLines={1}
-          >
+          <Text style={{ color: '#ccc', fontSize: 12 }} numberOfLines={1}>
             {currentSong.artist}
           </Text>
         </View>
       </View>
 
       {/* Nút Play / Pause */}
-      <TouchableOpacity onPress={() => playSong(currentSong)} style={{ paddingHorizontal: 8 }}>
+      <TouchableOpacity onPress={togglePlayPause} style={{ paddingHorizontal: 8 }}>
         <Entypo
           name={isPlaying ? 'controller-paus' : 'controller-play'}
           size={28}
