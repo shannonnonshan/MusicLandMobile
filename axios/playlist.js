@@ -38,7 +38,39 @@ export const createPlaylist = async ({ name, deviceId, imageUri }) => {
     }
   
 };
+export const updatePlaylist = async ({ name, playlistId, imageUri }) => {
+  try{
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('playlistId', playlistId);
 
+  if (imageUri) {
+    const fileName = imageUri.split('/').pop() || 'image.jpg';
+    const fileType = fileName.split('.').pop();
+
+
+    formData.append('image', {
+      uri: imageUri,
+      name: fileName,
+      type: `image/${fileType}`,
+    });
+  }
+    const info = await FileSystem.getInfoAsync(imageUri);
+    console.log('File exists:', info.exists, info.uri);
+    const response = await axiosInstance.post('/playlist/update', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }
+  );
+    console.log('Response:', response.data);
+    return response.data;
+  } catch (error) {
+      console.error('Error updating playlist:', error);
+      throw error;
+    }
+  
+};
 export const getPlaylists = async (deviceId) => {
   const res = await axiosInstance.get('/playlist/getPlaylists', {
     params: { deviceId }
@@ -56,11 +88,23 @@ export const getPlaylistTracks = async (playlistId) => {
 export const addSongToPlaylist = async (playlistId, songIds) => {
   const res = await axiosInstance.post('/playlist/addSongToPlaylist', {
     playlistId,
+    songIds,  
+  });
+  return res.data;
+};
+export const deleteSongInPlaylist = async (playlistId, songIds) => {
+  const res = await axiosInstance.post('/playlist/deleteSongInPlaylist', {
+    playlistId,
     songIds,   // gửi mảng songIds
   });
   return res.data;
 };
-
+export const searchPlaylists = async (deviceId, query) => {
+  const res = await axiosInstance.get('/playlist/search', {
+    params: { deviceId, query},
+  });
+  return res.data;
+}
 export const deletePlaylist = async (playlistId) => {
   const res = await axiosInstance.post('/playlist/deletePlaylist', {
     playlistId, 

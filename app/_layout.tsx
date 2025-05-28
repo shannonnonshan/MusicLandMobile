@@ -16,7 +16,6 @@ export default function RootLayout() {
   const pathname = usePathname();
 
   const hideMiniPlayer = pathname === '/player' || pathname === '/music/detail-music';
-
   if (!loaded) return null;
 
   return (
@@ -32,7 +31,7 @@ export default function RootLayout() {
             <Stack.Screen name="playlist/(modal)/create" options={{ presentation: 'modal', headerShown: false }} />
           </Stack>
 
-          {!hideMiniPlayer && <MiniPlayer />}
+          {!hideMiniPlayer && <MiniPlayer/>}
           <StatusBar style="auto" />
         </View>
       </MusicProvider>

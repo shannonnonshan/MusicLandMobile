@@ -45,8 +45,8 @@ export async function getTopCharts() {
   const data = response.data;
 
   return {
-    tracks: data.tracks.data,
-    albums: data.albums.data
+    tracks: data.tracks.data.slice(0, 10), // lấy 10 bài hát đầu
+    albums: data.albums.data.slice(0,5)
   };
 };
 export const fetchTop4Tracks = async () => {
@@ -110,3 +110,29 @@ export const searchTracksByIds = async (ids) => {
     throw error;
   }
 };
+export const extractTrackId = (url) => {
+  const match = url.match(/track\/(\d+)/);
+  return match ? match[1] : null;
+};
+export async function fetchLyricsFromDeezer(trackId, arlCookie) {
+  const url = `https://www.deezer.com/ajax/gw-light.php?method=song.getLyrics&api_version=1.0&sng_id=${trackId}`;
+
+  const res = await fetch(url, {
+    headers: {
+      Cookie: `arl=${arlCookie}`,
+      'User-Agent': 'Mozilla/5.0 (compatible; DeezerAPI/1.0)',
+      Accept: 'application/json',
+    },
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    throw new Error(data.error.message || 'Failed to fetch lyrics');
+  }
+
+  return data.results && data.results.lyrics && data.results.lyrics.lyrics
+    ? data.results.lyrics.lyrics
+    : '[Không có lời bài hát]';
+}
+

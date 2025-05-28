@@ -25,10 +25,9 @@ const tabs = [
   },
 ];
 
-export function TabsLayout({ visible }: { visible: boolean }) {
+export function TabsLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  if (!visible) return null;
 
   return (
     <SafeAreaView
@@ -45,7 +44,9 @@ export function TabsLayout({ visible }: { visible: boolean }) {
       }}
     >
       {tabs.map((tab) => {
-        const isFocused = pathname.includes(tab.name);
+        const isFocused =
+        pathname.replace('/(tabs)', '') === tab.path.replace('/(tabs)', '');
+
         return (
           <Pressable
             key={tab.name}

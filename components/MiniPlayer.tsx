@@ -1,17 +1,17 @@
 import { useMusicContext } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 interface MiniPlayerProps {
-  bottomOffset?: number;
   bgColor?: string;
 }
 
 export function MiniPlayer({
-  bottomOffset = 85,
   bgColor = '#F57D1F',
 }: MiniPlayerProps) {
+  const pathname = usePathname();
+  const isInTabs = pathname === '/' || pathname.includes('/home') || pathname.includes('/search'); // điều chỉnh theo cấu trúc app
   const router = useRouter();
   const {
     currentSong,
@@ -19,16 +19,15 @@ export function MiniPlayer({
     togglePlayPause,
     playNextSong,
   } = useMusicContext();
-
-  if (!currentSong) return null;
-
+  const insets = useSafeAreaInsets();
+  if (!currentSong) return null;  const bottomOffset = isInTabs ?  66 : 0; // Điều chỉnh offset nếu trong tab
   return (
     <TouchableOpacity
       onPress={() => router.push('/player')}
       activeOpacity={0.9}
       style={{
         position: 'absolute',
-        bottom: bottomOffset,
+        bottom: insets.bottom + bottomOffset,
         left: 0,
         right: 0,
         zIndex: 100,

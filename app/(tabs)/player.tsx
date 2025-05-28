@@ -23,14 +23,13 @@ const PlayerPage = () => {
     currentTime,
     duration,
     playSong,
+    seekTo,
     playNextSong,
     playPreviousSong,
-    seekTo,
     setVolume,
     toggleLike,
     formatTime,
   } = useMusicContext();
-
   if (!currentSong) {
     return (
       <View className="flex-1 justify-center items-center p-6 bg-black">
@@ -49,6 +48,9 @@ const PlayerPage = () => {
         </TouchableOpacity>
       </View>
     );
+  }
+  const handleReplay = () => {
+    seekTo(0);
   }
 
   return (
@@ -79,7 +81,11 @@ const PlayerPage = () => {
       {/* Album Cover */}
       <View className="w-64 h-64 mx-auto rounded-lg overflow-hidden shadow-lg mb-8">
         <Image
-          source={{ uri: currentSong.thumbnail || '/assets/images/MSlogo.png' }}
+          source={
+            currentSong.thumbnail?.startsWith('http')
+                ? { uri: currentSong.thumbnail }
+                : require('../../assets/images/MSlogo.png')
+            }
           className="w-full h-full rounded-lg"
           resizeMode="cover"
         />
@@ -142,7 +148,7 @@ const PlayerPage = () => {
         <TouchableOpacity onPress={playNextSong}>
           <Entypo name="controller-next" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => handleReplay()}>
            <Entypo name="ccw" size={20} color="white" />
         </TouchableOpacity>
 

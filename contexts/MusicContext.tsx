@@ -114,30 +114,35 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [sound]);
 
   useEffect(() => {
-    const loadAndPlay = async () => {
-      try {
-        if (sound) {
-          await sound.unloadAsync();
-          setSound(null);
-        }
-        if (currentSong) {
-          const { sound: newSound } = await Audio.Sound.createAsync(
-            { uri: currentSong.uri },
-            { shouldPlay: isPlaying, volume }
-          );
-          newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-          setSound(newSound);
-        }
-      } catch (error) {
-        toast({
-          title: 'Audio Load Error',
-          description: (error as Error).message,
-          variant: 'destructive',
-        });
+  const loadAndPlay = async () => {
+    try {
+      if (sound) {
+        await sound.unloadAsync();
+        setSound(null);
       }
-    };
-    loadAndPlay();
-  }, [currentSong]);
+
+      if (currentSong) {
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          { uri: currentSong.uri },
+          { shouldPlay: true, volume } // 🔥 Force autoplay
+        );
+
+        newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        setSound(newSound);
+        setIsPlaying(true); // ✅ Ensure state is in sync
+      }
+    } catch (error) {
+      toast({
+        title: 'Audio Load Error',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  loadAndPlay();
+}, [currentSong]);
+
 
   useEffect(() => {
     if (sound) sound.setVolumeAsync(volume);
@@ -183,7 +188,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     } else {
       setCurrentSong((prev) => (prev?.id === song.id ? prev : song));
-      setIsPlaying(true);
     }
 
     try {

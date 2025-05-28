@@ -1,94 +1,108 @@
-import { createPlaylist } from '@/axios/playlist';
+import { updatePlaylist } from '@/axios/playlist';
 import { useDeviceId } from '@/contexts/DeviceContext';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    Modal,
+    Platform,
+    StatusBar as RNStatusBar,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 
-const CreateScreen = ({
-  onClose,
-  onCreated,
-}: {
+interface Props {
+  visible: boolean;
+  playlistId?: string;
   onClose: () => void;
-  onCreated: () => void;
-}) => {
+  onUpdated: () => void;
+}
+
+export default function UpdatePlaylistModal({
+  visible,
+  playlistId,
+  onClose,
+  onUpdated,
+}: Props) {
+  if (!visible) return null; // Không render nếu không hiển thị
+
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState('');
   const { deviceId, loading } = useDeviceId();
 
   useEffect(() => {
     console.log('deviceId:', deviceId);
-    
   }, [deviceId]);
 
   const pickImage = async () => {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: false, // tắt editing của ImagePicker
-    quality: 1,
-  });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
 
-  if (!result.canceled) {
-    const asset = result.assets[0];
+    if (!result.canceled) {
+      const asset = result.assets[0];
 
-    const manipulated = await ImageManipulator.manipulateAsync(
-      asset.uri,
-      [
-        { resize: { width: 300, height: 200 } },
-      ],
-      {
-        compress: 0.8,
-        format: ImageManipulator.SaveFormat.JPEG,
-      }
-    );
+      const manipulated = await ImageManipulator.manipulateAsync(
+        asset.uri,
+        [{ resize: { width: 300, height: 200 } }],
+        {
+          compress: 0.8,
+          format: ImageManipulator.SaveFormat.JPEG,
+        }
+      );
 
-    setImage(manipulated.uri); // cập nhật URI đã xử lý
-  }
-};
+      setImage(manipulated.uri);
+    }
+  };
 
-  const handleCreatePlaylist = async () => {
+  const handleUpdatePlaylist = async () => {
     if (!name.trim()) {
       Alert.alert('Missing Information', 'Please enter a playlist name.');
       return;
     }
-    if (loading) return null;
-    if (!deviceId) {
-      Alert.alert('Device ID not available.');
+
+    if (loading) return;
+
+    if (!playlistId) {
+      Alert.alert('Playlist ID not available.');
       return;
     }
 
     try {
-      const result = await createPlaylist({
+      const result = await updatePlaylist({
         name,
-        deviceId,
+        playlistId,
         imageUri: image ?? undefined,
       });
 
-      console.log('Playlist created:', result);
+      console.log('Playlist updated:', result);
 
-      onCreated();  // Reload danh sách playlist
-      onClose();    // Đóng modal
+      onUpdated(); // Reload danh sách
+      onClose();   // Đóng modal
     } catch (err: any) {
-      console.error('Failed to create playlist:', err.message);
-      Alert.alert('Error', 'Could not create playlist.');
+      console.error('Failed to update playlist:', err.message);
+      Alert.alert('Error', 'Could not update playlist.');
     }
   };
 
   return (
+    <Modal
+      visible={visible} animationType="slide" transparent>
     <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.overlay}>
+                <View style={styles.modalContainer}>
       <View style={styles.header}>
-        <Text style={styles.title}>Create Playlist</Text>
+        <Text style={styles.title}>Update Playlist</Text>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Text style={{ color: '#7C3AED', fontWeight: 'bold' }}>Cancel</Text>
         </TouchableOpacity>
@@ -117,21 +131,39 @@ const CreateScreen = ({
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(600)} style={{ marginTop: 24 }}>
-        <TouchableOpacity onPress={handleCreatePlaylist} style={styles.button}>
-          <Text style={styles.buttonText}>Create Playlist</Text>
+        <TouchableOpacity onPress={handleUpdatePlaylist} style={styles.button}>
+          <Text style={styles.buttonText}>Update Playlist</Text>
         </TouchableOpacity>
       </Animated.View>
+                </View>
+        </View>
     </ScrollView>
+    </Modal>
   );
-};
+}
+;
 
-export default CreateScreen;
 
+const STATUS_BAR_HEIGHT =
+  Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 0 : 0;
 const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: '#121212',
     flexGrow: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'flex-end',
+  },
+    modalContainer: {
+    flex: 0.9,
+    backgroundColor: '#000',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: STATUS_BAR_HEIGHT,
+    paddingHorizontal: 16,
   },
   header: {
     flexDirection: 'row',
