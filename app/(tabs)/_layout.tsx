@@ -8,7 +8,7 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1 }}>
       <Slot />
-      <TabsLayout visible={inTab} />
+      <TabsLayout/>
     </View>
   );
 }

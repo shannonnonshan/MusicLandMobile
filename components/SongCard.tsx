@@ -1,21 +1,23 @@
 import type { Song } from '@/contexts/MusicContext';
 import { useMusicContext } from '@/contexts/MusicContext';
-import { Heart, Pause, Play } from 'lucide-react-native';
-import React from 'react';
+import { Heart, MoreVertical } from 'lucide-react-native';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
+import SongCardModal from './SongCardModal';
 type SongCardProps = {
   song: Song;
   index: number;
   onPress: () => void;
+  playlistId?: string;
 };
 
-const SongCard: React.FC<SongCardProps> = ({ song, index, onPress }) => {
+const SongCard: React.FC<SongCardProps> = ({ song, index, onPress, playlistId }) => {
   const { currentSong, isPlaying, toggleLike, formatTime } = useMusicContext();
 
   const isActive = currentSong && currentSong.id === song.id;
-
+  const [modalVisible, setModalVisible] = useState(false);
   return (
+  <>
     <TouchableOpacity
       onPress={onPress}
       style={[
@@ -55,22 +57,25 @@ const SongCard: React.FC<SongCardProps> = ({ song, index, onPress }) => {
 
         <Text style={styles.duration}>{formatTime(song.duration)}</Text>
 
-        <View
-          style={[
-            styles.playButton,
-            isActive && isPlaying ? styles.playingButton : styles.pausedButton,
-          ]}
-        >
-          {isActive && isPlaying ? (
-            <Pause size={16} color="white" />
-          ) : (
-            <Play size={16} color="#6b21a8" />
-          )}
+        <View>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <MoreVertical size={20} color="#6b21a8" />
+          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
-  );
-};
+    <SongCardModal
+        visible={modalVisible}
+        song = {song}
+        playlistId={playlistId} 
+        onClose={() => setModalVisible(false)}
+      />
+  </>
+);
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -79,6 +84,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     marginBottom: 10,
+  },
+  menuButton: {
+  padding: 8,
+  backgroundColor: "#f3e8ff",
+  borderRadius: 20,
+  alignItems: "center",
+  justifyContent: "center",
   },
   activeBackground: {
     backgroundColor: '#6b21a8',
@@ -130,6 +142,43 @@ const styles = StyleSheet.create({
   pausedButton: {
     backgroundColor: '#eee',
   },
+  modalOverlay: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1000,
+},
+
+modalContainer: {
+  width: 280,
+  backgroundColor: '#fff',
+  borderRadius: 10,
+  padding: 20,
+},
+
+modalTitle: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginBottom: 12,
+  textAlign: 'center',
+},
+
+modalOption: {
+  paddingVertical: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: '#ddd',
+},
+
+modalCancel: {
+  marginTop: 12,
+  alignItems: 'center',
+},
+
 });
 
 export default SongCard;

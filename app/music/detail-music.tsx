@@ -1,6 +1,7 @@
 // TabMusicPlayingScreen.js (hoặc .tsx)
 
 import { extractTrackId, fetchLyricsFromDeezer } from '@/axios/deezer.api';
+import { MarqueeText } from '@/components/ui/MarqueeText';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
 import * as Font from 'expo-font';
@@ -88,11 +89,21 @@ export default function TabMusicPlayingScreen() {
           </TouchableOpacity>
 
         <View style={styles.titleContainer}>
-          <Text style={styles.songTitle}>{currentSong?.title}</Text>
+          <MarqueeText text={currentSong?.title || ''} style={styles.songTitle}/>
           <Text style={styles.songArtist}>{currentSong?.artist}</Text>
         </View>
 
-        <Pressable style={styles.addToListButton}>
+       <Pressable
+            style={styles.addToListButton}
+            onPress={() => {
+              router.push({
+                pathname: '/playlist/list-playlist',
+                params: {
+                  isPlayer: 'true', // nên là chuỗi nếu dùng trong URL
+                },
+              });
+            }}
+          >
           <Entypo name="add-to-list" size={20} color="white" />
         </Pressable>
       </View>
@@ -146,19 +157,24 @@ const styles = StyleSheet.create({
   titleContainer: {
     position: 'absolute',
     top: '50%',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
+    // left: 0,
+    // right: 0,
     transform: [{ translateY: -12 }],
+    maxWidth: '80%',
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    paddingBottom: 8,
   },
   songTitle: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+    alignItems: 'center',
   },
   songArtist: {
     color: '#CCCCCC',
     fontSize: 14,
+    alignSelf: 'center',
   },
   addToListButton: {
     position: 'absolute',

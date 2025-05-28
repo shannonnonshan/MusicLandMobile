@@ -1,13 +1,14 @@
 import { searchTracksByIds } from '@/axios/deezer.api';
 import { baseURL } from '@/axios/platform.api';
 import { addSongToPlaylist, getPlaylistTracks } from '@/axios/playlist';
+import SelectSongsModal from '@/components/SelectSongModal';
 import SongCard from '@/components/SongCard';
+import UpdatePlaylistModal from '@/components/UpdatePlaylistModal';
 import { Song, useMusicContext } from '@/contexts/MusicContext';
+import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
 import { Pencil, Plus } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
-
-import SelectSongsModal from '@/components/SelectSongModal';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -16,7 +17,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
 const AlbumPage = () => {
   const { playSong } = useMusicContext();
   const { playlistId } = useLocalSearchParams();
@@ -25,31 +25,28 @@ const AlbumPage = () => {
   const [loading, setLoading] = useState(true);
   const [albumThumbnail, setAlbumThumbnail] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const navigation = useNavigation();
+  const [editModal, setEditModal] = useState(false);
+  const fetchAlbumSongs = async () => {
+  if (!playlistId) return;
 
-  useEffect(() => {
-    if (!playlistId) return;
+  try {
+    setLoading(true);
+    const playlist = await getPlaylistTracks(playlistId as string);
+    const songs = await searchTracksByIds(playlist.songs);
 
-    const fetchAlbumSongs = async () => {
-      try {
-        setLoading(true);
-        const playlist = await getPlaylistTracks(playlistId as string);
-
-        const [songs] = await Promise.all([
-          searchTracksByIds(playlist.songs),
-        ]);
-
-        setAlbumTitle(playlist.name);
-        setAlbumSongs(songs as any);
-        setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
-      } catch (error) {
-        console.error('Error fetching album songs or playlist detail:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAlbumSongs();
-  }, [playlistId]);
+    setAlbumTitle(playlist.name);
+    setAlbumSongs(songs as Song[]);
+    setAlbumThumbnail(`${baseURL.replace('/api', '')}${playlist.coverImage}`);
+  } catch (error) {
+    console.error('Error fetching album songs or playlist detail:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  fetchAlbumSongs();
+}, [playlistId]);
 
   const handleAddSongs = async (songs: Song[]) => {
     if (!playlistId) return;
@@ -67,6 +64,18 @@ const AlbumPage = () => {
       console.error('Failed to add songs:', error);
     }
   };
+  useLayoutEffect(() => {
+      if (albumTitle) {
+      navigation.setOptions({
+          title: albumTitle,
+          headerTitleStyle: {
+          color: '#fff',},
+          headerTintColor: '#fff',
+          headerStyle: {
+          backgroundColor: '#111'}
+      });
+      }
+  }, [navigation, albumTitle])
 
   return (
     <>
@@ -102,7 +111,7 @@ const AlbumPage = () => {
 
             <TouchableOpacity
               onPress={() => {
-                console.log('Edit button pressed');
+                setEditModal(true);
               }}
               className="bg-gray-800 px-4 py-2 rounded-xl flex-row items-center"
             >
@@ -120,7 +129,7 @@ const AlbumPage = () => {
           <FlatList
             data={albumSongs}
             renderItem={({ item, index }) => (
-              <SongCard song={item} index={index} onPress={() => playSong(item)} />
+              <SongCard song={item} index={index} onPress={() => playSong(item)} playlistId={playlistId as string}/>
             )}
             ItemSeparatorComponent={() => <View className="h-1" />}
             showsVerticalScrollIndicator={false}
@@ -139,7 +148,17 @@ const AlbumPage = () => {
           onClose={() => setShowModal(false)}
           onConfirm={handleAddSongs}
         />
+         <UpdatePlaylistModal
+          visible={editModal}
+          onClose={() => setEditModal(false)}
+          onUpdated={() => {
+            fetchAlbumSongs()
+              setEditModal(false);
+          }}
+          playlistId={playlistId as string}
+        />
       </View>
+     
     </>
   );
 };

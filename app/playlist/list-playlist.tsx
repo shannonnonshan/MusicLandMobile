@@ -1,9 +1,10 @@
 import { baseURL } from '@/axios/platform.api';
-import { getPlaylists } from '@/axios/playlist';
+import { getPlaylists, searchPlaylists } from '@/axios/playlist';
+import PlayerAddSongCard from '@/components/PlayerAddSongCard'; // chỉnh đường dẫn đúng
 import { useDeviceId } from '@/contexts/DeviceContext';
-import { Playlist } from '@/contexts/MusicContext';
+import { Playlist, Song } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   Dimensions,
@@ -12,38 +13,49 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   View
 } from 'react-native';
-
 import Animated, { SlideInLeft } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CreateScreen from './(modal)/create'; // chỉnh đường dẫn đúng
-
 export default function ListPlaylistView() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
   const screenHeight = Dimensions.get('window').height;
   const { deviceId, loading } = useDeviceId();
-  useEffect(() => {
-      // console.log('deviceId:', deviceId);
-    }, [deviceId]);
+  const { isPlayer, song: rawSong} = useLocalSearchParams();
+    const [searchQuery, setSearchQuery] = useState('');
 
-  // Hàm load playlist, có thể gọi lại khi cần reload
-  const loadPlaylists = async () => {
+  let song: Song | undefined = undefined;
+  try {
+  song = JSON.parse(rawSong as string);
+  }
+  catch (error) {
+  }
+  useEffect(() => {
+  fetchPlaylists();
+}, [searchQuery, deviceId, loading]);
+
+  const fetchPlaylists = async () => {
     try {
-      if (loading) return null;
-      const data = await getPlaylists(deviceId);
+      if (loading) return;
+      if (!deviceId) return;
+
+      let data: Playlist[] = [];
+
+      if (searchQuery.trim()) {
+        data = await searchPlaylists(deviceId, searchQuery.trim());
+      } else {
+        data = await getPlaylists(deviceId);
+      }
+
       setPlaylists(data);
     } catch (err) {
       console.error('Failed to fetch playlists:', err);
     }
   };
-  
-  
-  useEffect(() => {
-    loadPlaylists();
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#121212' }}>
@@ -87,22 +99,33 @@ export default function ListPlaylistView() {
       </View>
 
       {/* Playlist List */}
-      <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: 80, minHeight: screenHeight }}
-      >
-        {playlists.map((playlist, index) => (
-          <Pressable
-              key={playlist._id}
-              onPress={() =>
-                router.push({
-                  pathname: '/playlist/library',
-                  params: { playlistId: playlist._id.toString() },
-                })}
-              style={({ pressed }) => ({
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                  borderRadius: 12,
-                })}
-            >
+      <View className="pt-2 w-full bg-[#000] px-4">
+        <TextInput
+          className="text-[#fff] bg-[#222] rounded-lg pr-3 py-2  pl-4 text-xl"
+          placeholder="Search Playlist..."
+          placeholderTextColor="#aaa"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+
+     <ScrollView
+  contentContainerStyle={{ padding: 16, paddingBottom: 80, minHeight: screenHeight }}
+>
+  {playlists.map((playlist, index) => (
+    !isPlayer ? (
+        <Pressable
+          key={playlist._id}
+          onPress={() =>
+            router.push({
+              pathname: '/playlist/library',
+              params: { playlistId: playlist._id.toString() },
+            })}
+          style={({ pressed }) => ({
+            transform: [{ scale: pressed ? 0.98 : 1 }],
+            borderRadius: 12,
+          })}
+        >
           <Animated.View
             entering={SlideInLeft.delay(300 + index * 100)}
             style={{
@@ -123,7 +146,9 @@ export default function ListPlaylistView() {
 
             <View style={{ flex: 1 }}>
               <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{playlist.name}</Text>
-              <Text style={{ color: '#F0F0F0', fontSize: 12 }}>{playlist.countSong} song{playlist.countSong !== 1 ? 's' : ''}</Text>
+              <Text style={{ color: '#F0F0F0', fontSize: 12 }}>
+                {playlist.countSong} song{playlist.countSong !== 1 ? 's' : ''}
+              </Text>
             </View>
 
             <Pressable
@@ -140,9 +165,18 @@ export default function ListPlaylistView() {
               <Entypo name="controller-play" size={18} color="white" />
             </Pressable>
           </Animated.View>
-          </Pressable>
-        ))}
-      </ScrollView>
+        </Pressable>
+      ) : (
+        <PlayerAddSongCard
+          key={playlist._id}
+          playlist={playlist}
+          index={index}
+          song={song ?? undefined}
+        ></PlayerAddSongCard>
+      ) 
+    ))}
+  </ScrollView>
+
 
       {/* Modal Popup Create Playlist */}
       <Modal
@@ -174,7 +208,7 @@ export default function ListPlaylistView() {
             <CreateScreen
               onClose={() => setModalVisible(false)}
               onCreated={() => {
-                loadPlaylists();
+                fetchPlaylists();
                 setModalVisible(false);
               }}
             />
