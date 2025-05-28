@@ -1,5 +1,5 @@
 import { fetchTop4Tracks } from '@/axios/deezer.api';
-import { fetchPlaylists } from '@/axios/playlist';
+import { getPlaylists as fetchPlaylists } from '@/axios/playlist';
 import { useDeviceId } from '@/contexts/DeviceContext';
 import { Song, useMusicContext } from '@/contexts/MusicContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,7 +8,6 @@ import { Disc, Headphones, Music, Play } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Image, Platform, StatusBar as RNStatusBar, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInLeft } from 'react-native-reanimated';
-
 const Button = ({ onPress, children, style }: any) => (
   <TouchableOpacity
     onPress={onPress}
@@ -38,9 +37,7 @@ const colorsPool = [
 ];
 
 interface FeaturedPlaylist {
-  id: string;
-  name: string;
-  countSong: number;
+  playlist:any;
   colors: string[];
 }
 
@@ -57,11 +54,10 @@ const HomePage = () => {
   useEffect(() => {
     const getPlaylists = async () => {
       try {
-        const data = await fetchPlaylists();
-        const withColors: FeaturedPlaylist[] = data.map((p: any, i: number) => ({
-          id: p._id || p.id,
-          name: p.name,
-          countSong: p.countSong || 0,
+        const data = await fetchPlaylists(deviceId.deviceId);
+        const slice = data.slice(0,3)
+        const withColors: FeaturedPlaylist[] = slice.map((p: any, i: number) => ({
+          playlist: p,
           colors: colorsPool[i % colorsPool.length],
         }));
         setFeaturedPlaylists(withColors);
@@ -73,7 +69,7 @@ const HomePage = () => {
     };
 
     getPlaylists();
-  }, []);
+  }, [deviceId]);
 
  const loadRecentSongs = async () => {
   try {
@@ -190,6 +186,8 @@ const HomePage = () => {
                   borderRadius: 12,
                   padding: 10,
                   marginBottom: 12,
+                  flexDirection: 'column',
+                  alignItems:'center'
                 }}
                 onPress={() => playSong(song)}
                 activeOpacity={0.7}
@@ -230,8 +228,15 @@ const HomePage = () => {
         </View>
         <View>
           {featuredPlaylists.map((playlist, index) => (
+            <TouchableOpacity
+            key={playlist.playlist._id}
+            onPress={() => {
+                    router.push({
+                      pathname: '/playlist/library',
+                      params: { playlistId: playlist.playlist._id},
+                    });
+                  }}>
             <Animated.View
-              key={playlist.id}
               entering={SlideInLeft.delay(500 + index * 100)}
               style={{
                 flexDirection: 'row',
@@ -246,8 +251,8 @@ const HomePage = () => {
               }}
             >
               <View>
-                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{playlist.name}</Text>
-                <Text style={{ color: '#F0F0F0', fontSize: 12 }}>{playlist.countSong} songs</Text>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{playlist.playlist.name}</Text>
+                <Text style={{ color: '#F0F0F0', fontSize: 12 }}>{playlist.playlist.countSong} songs</Text>
               </View>
               <TouchableOpacity
                 style={{
@@ -257,12 +262,16 @@ const HomePage = () => {
                 }}
                 activeOpacity={0.7}
                 onPress={() => {
-                  // Add logic for playlist click
-                }}
+                    router.push({
+                      pathname: '/playlist/library',
+                      params: { playlistId: playlist.playlist._id},
+                    });
+                  }}
               >
                 <Play color="white" size={16} />
               </TouchableOpacity>
             </Animated.View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>

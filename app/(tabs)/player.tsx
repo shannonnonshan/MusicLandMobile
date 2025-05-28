@@ -11,10 +11,12 @@ import {
   Volume2
 } from 'lucide-react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PlayerPage = () => {
   const router = useRouter();  
   const deviceId = useDeviceId();
+  const insets = useSafeAreaInsets()
   const {
     currentSong,
     isPlaying,
@@ -54,7 +56,8 @@ const PlayerPage = () => {
   }
 
   return (
-    <View className="flex-1 bg-black from-purple-900 via-indigo-900 to-black px-4 py-6 pb-20 relative">
+   
+    <View style={{paddingTop: insets.top}} className="flex-1 bg-black from-purple-900 via-indigo-900 to-black px-4 py-6 pb-20 relative">
       {/* Header */}
       <View className="flex-row items-center mb-8">
         <TouchableOpacity

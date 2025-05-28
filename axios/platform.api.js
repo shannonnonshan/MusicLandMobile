@@ -15,6 +15,14 @@ if (Platform.OS === 'android') {
     const ip = debuggerHost.split(':')[0];
     baseURL = `http://${ip}:5000/api`;
   } 
+}else if (Platform.OS === 'ios') {
+  const debuggerHost = Constants.manifest?.debuggerHost || Constants.expoConfig?.hostUri;
+  if (debuggerHost) {
+    const ip = debuggerHost.split(':')[0];
+    baseURL = `http://${ip}:5000/api`;
+  } else {
+    baseURL = 'http://192.168.1.13:5000/api'; // fallback nếu không lấy được host
+  }
 }
   
 console.log('Base URL:', baseURL);

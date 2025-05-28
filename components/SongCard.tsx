@@ -9,9 +9,10 @@ type SongCardProps = {
   index: number;
   onPress: () => void;
   playlistId?: string;
+  onAction?: () => void;
 };
 
-const SongCard: React.FC<SongCardProps> = ({ song, index, onPress, playlistId }) => {
+const SongCard: React.FC<SongCardProps> = ({ song, index, onPress, playlistId, onAction }) => {
   const { currentSong, isPlaying, toggleLike, formatTime } = useMusicContext();
 
   const isActive = currentSong && currentSong.id === song.id;
@@ -72,6 +73,7 @@ const SongCard: React.FC<SongCardProps> = ({ song, index, onPress, playlistId })
         song = {song}
         playlistId={playlistId} 
         onClose={() => setModalVisible(false)}
+        onAction={onAction}
       />
   </>
 );

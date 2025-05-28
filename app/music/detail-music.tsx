@@ -8,8 +8,7 @@ import * as Font from 'expo-font';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, StatusBar as RNStatusBar, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 const loadFonts = () =>
   Font.loadAsync({
     'Lexend-SemiBold': require('@/assets/fonts/lexend_semibold.ttf'),
@@ -24,7 +23,7 @@ export default function TabMusicPlayingScreen() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [lyrics, setLyrics] = useState('');
   const [loadingLyrics, setLoadingLyrics] = useState(false);
-
+  const insets = useSafeAreaInsets()
   const { currentSong } = useMusicContext();
   const arlCookie =
     '44f8df9da9be438e3f451a9b6df8c78dda43402d92f2ff263182b1bbed4ef568e76fcc3f171ec99475023939c62792946f5e135f0872bd0a427f1d84f0ea73edb170a51f6701b803aa717b6536f0788bf61b6124abeb97fcfd5fceb87aaaade9';
@@ -62,7 +61,7 @@ export default function TabMusicPlayingScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={[styles.container, { paddingTop: insets.top}]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: 24 }}
@@ -88,7 +87,7 @@ export default function TabMusicPlayingScreen() {
             <Entypo name="chevron-small-left" size={20} color="white" />
           </TouchableOpacity>
 
-        <View style={styles.titleContainer}>
+        <View className='items-center mx-[25%]'>
           <MarqueeText text={currentSong?.title || ''} style={styles.songTitle}/>
           <Text style={styles.songArtist}>{currentSong?.artist}</Text>
         </View>
@@ -110,7 +109,10 @@ export default function TabMusicPlayingScreen() {
     </SafeAreaView>
   );
 }
-const STATUS_BAR_HEIGHT = Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 24 : 0;
+const STATUS_BAR_HEIGHT =
+  Platform.OS === 'android'
+    ? RNStatusBar.currentHeight ?? 24:2
+  
 
 const styles = StyleSheet.create({
   loadingContainer: {
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#191A1F',
     padding: 16,
-    paddingTop: STATUS_BAR_HEIGHT + 10,
+    paddingTop: STATUS_BAR_HEIGHT + 20,
   },
   scrollView: {
     flex: 1,
@@ -157,24 +159,24 @@ const styles = StyleSheet.create({
   titleContainer: {
     position: 'absolute',
     top: '50%',
-    // left: 0,
-    // right: 0,
+    left: 0,
+    right: 0,
     transform: [{ translateY: -12 }],
-    maxWidth: '80%',
+    maxWidth: '60%',
     paddingHorizontal: 16,
     alignItems: 'center',
     paddingBottom: 8,
   },
   songTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     alignItems: 'center',
+    textAlign: 'center',
   },
   songArtist: {
     color: '#CCCCCC',
     fontSize: 14,
-    alignSelf: 'center',
   },
   addToListButton: {
     position: 'absolute',

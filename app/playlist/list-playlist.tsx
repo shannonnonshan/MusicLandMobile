@@ -123,6 +123,8 @@ export default function ListPlaylistView() {
           playlist={playlist}
           index={index}
           song={song ?? undefined}
+          onAction={() => {
+            fetchPlaylists();}}
         />
       );
     }

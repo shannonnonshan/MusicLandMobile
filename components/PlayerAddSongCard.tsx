@@ -10,9 +10,10 @@ interface Props {
   playlist: Playlist;
   index: number;
   song?: Song;
+  onAction?: () => void;
 }
 
-const PlayerAddSongCard: React.FC<Props> = ({playlist , index, song}) => {
+const PlayerAddSongCard: React.FC<Props> = ({playlist , index, song, onAction}) => {
     const router = useRouter();
     const [isAdded, setIsAdded] = useState(false); 
     const {currentSong} = useMusicContext();
@@ -23,6 +24,9 @@ const PlayerAddSongCard: React.FC<Props> = ({playlist , index, song}) => {
         if (!currentSong) return;
         await addSongToPlaylist(playlist._id, currentSong.id);
         setIsAdded(true);
+        if (onAction) {
+            onAction();
+        }
         } catch (error) {
         console.error('Add song failed:', error);
         }

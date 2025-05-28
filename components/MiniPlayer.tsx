@@ -1,7 +1,7 @@
 import { useMusicContext } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 interface MiniPlayerProps {
   bgColor?: string;
@@ -20,14 +20,16 @@ export function MiniPlayer({
     playNextSong,
   } = useMusicContext();
   const insets = useSafeAreaInsets();
-  if (!currentSong) return null;  const bottomOffset = isInTabs ?  66 : 0; // Điều chỉnh offset nếu trong tab
+  const windowHeight = Dimensions.get('window').height;
+  const height = windowHeight * 0.06 + insets.bottom;
+  if (!currentSong) return null;  const bottomOffset = isInTabs ?  height: insets.bottom; // Điều chỉnh offset nếu trong tab
   return (
     <TouchableOpacity
       onPress={() => router.push('/player')}
       activeOpacity={0.9}
       style={{
         position: 'absolute',
-        bottom: insets.bottom + bottomOffset,
+        bottom: bottomOffset,
         left: 0,
         right: 0,
         zIndex: 100,

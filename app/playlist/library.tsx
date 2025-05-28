@@ -134,7 +134,7 @@ useEffect(() => {
           <FlatList
             data={albumSongs}
             renderItem={({ item, index }) => (
-              <SongCard song={item} index={index} onPress={() => playSong(item)} playlistId={playlistId as string}/>
+              <SongCard song={item} index={index} onPress={() => playSong(item)} playlistId={playlistId as string} onAction={()=>fetchAlbumSongs()}/>
             )}
             ItemSeparatorComponent={() => <View className="h-1" />}
             showsVerticalScrollIndicator={false}

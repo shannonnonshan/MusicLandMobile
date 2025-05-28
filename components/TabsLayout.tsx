@@ -1,9 +1,10 @@
 // components/TabsLayout.tsx
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
-import { Pressable, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Dimensions, Pressable, Text } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconSymbol } from './ui/IconSymbol';
+
 const tabs = [
   {
     name: 'home',
@@ -13,7 +14,7 @@ const tabs = [
   },
   {
     name: 'search',
-    icon:  ({color} : {color: string}) => <FontAwesome name="search" size={24} color={color} />,
+    icon:  ({color} : {color: string}) => <FontAwesome name="search" size={28} color={color} />,
     path: '/(tabs)/search',
     label: 'Search',
   },
@@ -28,15 +29,18 @@ const tabs = [
 export function TabsLayout() {
   const pathname = usePathname();
   const router = useRouter();
-
+  const insets = useSafeAreaInsets()
+  const windowHeight = Dimensions.get('window').height;
+  const height = windowHeight * 0.06 + insets.bottom;
   return (
     <SafeAreaView
      edges={['bottom']}
       style={{
+        height:height,
         flexDirection: 'row',
         justifyContent: 'space-around',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-       paddingVertical: 10,
+        paddingVertical: 10,
         position: 'absolute',
         bottom: 0,
         left: 0,

@@ -66,8 +66,9 @@ export const MarqueeText: React.FC<MarqueeTextProps> = ({
     >
       <Animated.Text
         onLayout={onTextLayout}
-
-        style={[{paddingLeft: 10, paddingRight: 10, alignSelf: 'center'},
+        numberOfLines={1}
+        ellipsizeMode='tail'
+        style={[{alignSelf: 'center'},
           { transform: [{ translateX }] },
           Array.isArray(style) ? style : [style],
         ]}
