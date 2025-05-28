@@ -23,14 +23,13 @@ const PlayerPage = () => {
     currentTime,
     duration,
     playSong,
+    seekTo,
     playNextSong,
     playPreviousSong,
-    seekTo,
     setVolume,
     toggleLike,
     formatTime,
   } = useMusicContext();
-
   if (!currentSong) {
     return (
       <View className="flex-1 justify-center items-center p-6 bg-black">
@@ -49,6 +48,9 @@ const PlayerPage = () => {
         </TouchableOpacity>
       </View>
     );
+  }
+  const handleReplay = () => {
+    seekTo(0);
   }
 
   return (
@@ -146,7 +148,7 @@ const PlayerPage = () => {
         <TouchableOpacity onPress={playNextSong}>
           <Entypo name="controller-next" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => handleReplay()}>
            <Entypo name="ccw" size={20} color="white" />
         </TouchableOpacity>
 

@@ -88,7 +88,7 @@ export const getPlaylistTracks = async (playlistId) => {
 export const addSongToPlaylist = async (playlistId, songIds) => {
   const res = await axiosInstance.post('/playlist/addSongToPlaylist', {
     playlistId,
-    songIds,   // gửi mảng songIds
+    songIds,  
   });
   return res.data;
 };
@@ -105,5 +105,11 @@ export const searchPlaylists = async (deviceId, query) => {
   });
   return res.data;
 }
+export const deletePlaylist = async (playlistId) => {
+  const res = await axiosInstance.post('/playlist/deletePlaylist', {
+    playlistId, 
+  });
+  return res.data;
+};
 
 

@@ -15,14 +15,8 @@ interface Props {
 const PlayerAddSongCard: React.FC<Props> = ({playlist , index, song}) => {
     const router = useRouter();
     const [isAdded, setIsAdded] = useState(false); 
-    let currentSong;
-    if(song){
-     currentSong = song;
-    }
-    else{
-     const { currentSong: current } = useMusicContext();
-        currentSong = current;
-    }
+    const {currentSong} = useMusicContext();
+    console.log(currentSong);
 
     const handleAddSong = async () => {
         try {

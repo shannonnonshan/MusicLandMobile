@@ -1,5 +1,4 @@
 import { createPlaylist } from '@/axios/playlist';
-// import { useDeviceId } from '@/hooks/useDeviceId';
 import { useDeviceId } from '@/contexts/DeviceContext';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
