@@ -2,12 +2,13 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-let baseURL = 'http://localhost:5000/api'; // Default for web
+let baseURL = 'https://musicland-fhhi.onrender.com/api'; // Default for web
 
 if (Platform.OS === 'android') {
   // Android emulator đặc biệt: dùng 10.0.2.2 để trỏ về localhost máy thật
   // baseURL = 'http://10.0.2.2:5000/api';
-  baseURL = 'http://192.168.1.6:5000/api';
+  // baseURL = 'http://192.168.1.6:5000/api';
+  baseURL = 'https://musicland-fhhi.onrender.com/api'
 } else if (Platform.OS !== 'web') {
   const debuggerHost = Constants.manifest?.debuggerHost || Constants.expoConfig?.hostUri;
   console.log('Debugger host:', debuggerHost);
