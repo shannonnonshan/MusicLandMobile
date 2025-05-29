@@ -1,6 +1,5 @@
 import { createPlaylist } from '@/axios/playlist';
 import { useDeviceId } from '@/contexts/DeviceContext';
-import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
@@ -42,18 +41,19 @@ const CreateScreen = ({
   if (!result.canceled) {
     const asset = result.assets[0];
 
-    const manipulated = await ImageManipulator.manipulateAsync(
-      asset.uri,
-      [
-        { resize: { width: 300, height: 200 } },
-      ],
-      {
-        compress: 0.8,
-        format: ImageManipulator.SaveFormat.JPEG,
-      }
-    );
+    // const manipulated = await ImageManipulator.manipulateAsync(
+    //   asset.uri,
+    //   [
+    //     { resize: { width: 300, height: 200 } },
+    //   ],
+    //   {
+    //     compress: 0.8,
+    //     format: ImageManipulator.SaveFormat.JPEG,
+    //   }
+    // );
 
-    setImage(manipulated.uri); // cập nhật URI đã xử lý
+    // setImage(manipulated.uri); // cập nhật URI đã xử lý;
+    setImage(asset.uri);
   }
 };
 
