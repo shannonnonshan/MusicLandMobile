@@ -6,8 +6,8 @@ let baseURL = 'http://localhost:5000/api'; // Default for web
 
 if (Platform.OS === 'android') {
   // Android emulator đặc biệt: dùng 10.0.2.2 để trỏ về localhost máy thật
-  baseURL = 'http://10.0.2.2:5000/api';
-  // baseURL = 'http://192.168.1.6:5000/api';
+  // baseURL = 'http://10.0.2.2:5000/api';
+  baseURL = 'http://192.168.1.6:5000/api';
 } else if (Platform.OS !== 'web') {
   const debuggerHost = Constants.manifest?.debuggerHost || Constants.expoConfig?.hostUri;
   console.log('Debugger host:', debuggerHost);

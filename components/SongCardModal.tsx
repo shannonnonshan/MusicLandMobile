@@ -17,7 +17,7 @@ interface Props {
   song: Song;
   playlistId?: string;
   onClose: () => void;
-  onAction: () => void;
+  onAction?: () => void;
 }
 
 export default function SongCardModal({ visible, song, playlistId, onClose,onAction}: Props) {
@@ -28,7 +28,7 @@ const deviceId = useDeviceId();
     if (!song) return;
     await deleteSongInPlaylist(playlistId, song.id);
     console.log('Song deleted successfully');
-    onAction()
+    onAction?.();
     onClose();
     } catch (error: any) {
     console.error('Delete song failed:', error.message);

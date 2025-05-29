@@ -69,12 +69,12 @@ const SongCard: React.FC<SongCardProps> = ({ song, index, onPress, playlistId, o
       </View>
     </TouchableOpacity>
     <SongCardModal
-        visible={modalVisible}
-        song = {song}
-        playlistId={playlistId} 
-        onClose={() => setModalVisible(false)}
-        onAction={() =>onAction}
-      />
+      visible={modalVisible}
+      song={song}
+      playlistId={playlistId} 
+      onClose={() => setModalVisible(false)}
+      onAction={onAction}
+    />
   </>
 );
 }
