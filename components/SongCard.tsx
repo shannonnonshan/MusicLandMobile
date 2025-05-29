@@ -73,7 +73,7 @@ const SongCard: React.FC<SongCardProps> = ({ song, index, onPress, playlistId, o
         song = {song}
         playlistId={playlistId} 
         onClose={() => setModalVisible(false)}
-        onAction={onAction}
+        onAction={() =>onAction}
       />
   </>
 );

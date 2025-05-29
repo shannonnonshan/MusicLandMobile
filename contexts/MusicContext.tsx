@@ -29,7 +29,7 @@ export interface Song {
 }
 export interface Album {
   id: string;
-  title: string;
+  name: string;
   artist: string;
   thumbnail: string;
   songs: Song[];
@@ -54,8 +54,8 @@ interface MusicContextType {
   currentTime: number;
   thumbnail: string;
   uri: string;
-  currentPlaylist: Playlist | null;
-  setCurrentPlaylist: (playlist: Playlist) => void;
+  currentPlaylist: Playlist | Album | null;
+  setCurrentPlaylist: (playlist: Playlist | Album) => void;
   playSong: (song: Song) => void;
   pauseSong: () => void;
   togglePlayPause: () => void; // ✅ mới thêm
@@ -81,7 +81,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const { toast } = useToast();
   const [songs, setSongs] = useState<Song[]>([]);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
+  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | Album | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(0.8);

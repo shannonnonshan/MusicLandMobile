@@ -94,7 +94,7 @@ useEffect(() => {
             <Entypo name="chevron-left" size={24} color="white" />
           </TouchableOpacity>
           <Text className="text-white text-2xl font-semibold">
-             {currentPlaylist?.name || 'Playlist'}
+             {currentPlaylist?.name  || 'Playlist'}
           </Text>
         </View>
 

@@ -45,7 +45,7 @@ export default function TabSearchScreen() {
 
         const mappedAlbums: Album[] = res.albums.map((album: any) => ({
           id: album.id,
-          title: album.title,
+          name: album.title,
           artist: album.artist?.name || 'Unknown Artist',
           album: album.title,
           thumbnail: album.cover_medium || '',
@@ -71,7 +71,7 @@ export default function TabSearchScreen() {
 
         const mappedAlbums: Album[] = res.albums.map((album: any) => ({
           id: album.id,
-          title: album.title,
+          name: album.title,
           artist: album.artist?.name || 'Unknown Artist',
           album: album.title,
           thumbnail: album.cover_medium || '',
@@ -123,7 +123,7 @@ export default function TabSearchScreen() {
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingHorizontal:4}}
+                  contentContainerStyle={{ paddingHorizontal:4, width:'100%'}}
                 >
                   {albumResults.map((album, index) => (
                     <AlbumCard

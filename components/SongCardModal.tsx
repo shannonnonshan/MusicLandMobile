@@ -4,22 +4,23 @@ import type { Song } from '@/contexts/MusicContext';
 import { Entypo } from '@expo/vector-icons'; // 👈 dùng cho icon "cancel"
 import { useRouter } from 'expo-router';
 import {
-    Modal,
-    Platform,
-    StatusBar as RNStatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Modal,
+  Platform,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 interface Props {
   visible: boolean;
   song: Song;
   playlistId?: string;
   onClose: () => void;
+  onAction: () => void;
 }
 
-export default function SongCardModal({ visible, song, playlistId, onClose}: Props) {
+export default function SongCardModal({ visible, song, playlistId, onClose,onAction}: Props) {
   const router = useRouter();
 const deviceId = useDeviceId();
   const handleDeleteSong = async () => {
@@ -27,6 +28,7 @@ const deviceId = useDeviceId();
     if (!song) return;
     await deleteSongInPlaylist(playlistId, song.id);
     console.log('Song deleted successfully');
+    onAction()
     onClose();
     } catch (error: any) {
     console.error('Delete song failed:', error.message);

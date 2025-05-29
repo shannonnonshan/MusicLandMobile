@@ -1,4 +1,4 @@
-import { getAlbumTracks } from '@/axios/deezer.api';
+import { getAlbumTracks, searchTracksByIds } from '@/axios/deezer.api';
 import SongCard from '@/components/SongCard';
 import { useMusicContext } from '@/contexts/MusicContext';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
@@ -11,6 +11,7 @@ const AlbumPage = () => {
   const [albumTitle, setAlbumTitle] = useState('');
   const [albumSongs, setAlbumSongs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const {setCurrentPlaylist} = useMusicContext();
   const [albumThumbnail, setAlbumThumbnail] = useState('');
   const screenHeight = Dimensions.get('window').height; // Assuming a fixed height for simplicity, you can use Dimensions API for dynamic height
   useEffect(() => {
@@ -19,10 +20,14 @@ const AlbumPage = () => {
     const fetchAlbumSongs = async () => {
       try {
         setLoading(true);
-        const { albumTitle,albumThumbnail, songs } = await getAlbumTracks(Number(albumId));
+        const { albumTitle,albumThumbnail, songs, album } = await getAlbumTracks(Number(albumId));
         setAlbumTitle(albumTitle);
         setAlbumSongs(songs);
         setAlbumThumbnail(albumThumbnail);
+        console.log(songs)
+        const songIds = songs.map((song: { id: number }) => song.id);
+        const songPlaylist = await searchTracksByIds(songIds);
+        setCurrentPlaylist({ ...album, songs: songPlaylist });
       } catch (error) {
         console.error('Error fetching album songs:', error);
       } finally {

@@ -43,7 +43,6 @@ export async function getTopCharts() {
   const response = await axios.get(url);
 
   const data = response.data;
-
   return {
     tracks: data.tracks.data.slice(0, 10), // lấy 10 bài hát đầu
     albums: data.albums.data.slice(0,5)
@@ -74,11 +73,11 @@ export async function getAlbumTracks(albumId) {
     thumbnail: data.cover_medium || '',
     uri: track.preview || ''
   }));
-
   return {
     albumThumbnail: data.cover_medium,
     albumTitle: data.title,
-    songs
+    songs,
+    album:data
   };
 }
 
@@ -130,7 +129,6 @@ export async function fetchLyricsFromDeezer(trackId, arlCookie) {
   if (data.error) {
     throw new Error(data.error.message || 'Failed to fetch lyrics');
   }
-
   return data.results && data.results.lyrics && data.results.lyrics.lyrics
     ? data.results.lyrics.lyrics
     : '[Không có lời bài hát]';

@@ -35,7 +35,7 @@ const AlbumCard: React.FC<AlbumProps> = ({ album, onPress }) => {
         }}
     />
     <Text style={{ fontWeight: '500', color: 'white' }} numberOfLines={1}>
-        {album.title}
+        {album.name}
     </Text>
     <Text style={{ fontSize: 12, color: '#9CA3AF' }} numberOfLines={1}>
         {album.artist}
