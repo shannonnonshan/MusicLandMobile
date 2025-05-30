@@ -4,20 +4,29 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Modal,
-    Platform,
-    StatusBar as RNStatusBar,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Modal,
+  Platform,
+  StatusBar as RNStatusBar,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
+// 🔧 (Bạn cần tự viết hàm này trong '@/axios/playlist')
+async function getPlaylist(playlistId: string) {
+  // Gọi API lấy thông tin playlist hiện tại
+  // Ví dụ: return axios.get(`/playlist/${playlistId}`);
+  return {
+    name: 'Sample Playlist',
+    imageUri: null,
+  };
+}
 
 interface Props {
   visible: boolean;
@@ -32,15 +41,32 @@ export default function UpdatePlaylistModal({
   onClose,
   onUpdated,
 }: Props) {
-  if (!visible) return null; // Không render nếu không hiển thị
-
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState('');
   const { deviceId, loading } = useDeviceId();
 
+  // 🌟 Load dữ liệu playlist hiện tại
   useEffect(() => {
-    console.log('deviceId:', deviceId);
-  }, [deviceId]);
+    if (visible && playlistId) {
+      (async () => {
+        try {
+          const res = await getPlaylist(playlistId);
+          setName(res.name || '');
+          setImage(res.imageUri || null);
+        } catch (err) {
+          console.error('Failed to load playlist info:', err);
+        }
+      })();
+    }
+  }, [visible, playlistId]);
+
+  // 🔄 Reset form khi đóng modal
+  useEffect(() => {
+    if (!visible) {
+      setName('');
+      setImage(null);
+    }
+  }, [visible]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -87,65 +113,69 @@ export default function UpdatePlaylistModal({
 
       console.log('Playlist updated:', result);
 
-      onUpdated(); // Reload danh sách
-      onClose();   // Đóng modal
+      onUpdated();
+      onClose();
     } catch (err: any) {
       console.error('Failed to update playlist:', err.message);
       Alert.alert('Error', 'Could not update playlist.');
     }
   };
 
+  if (!visible) return null;
+
   return (
-    <Modal
-      visible={visible} animationType="slide" transparent>
-    <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.overlay}>
-                <View style={styles.modalContainer}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Update Playlist</Text>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Text style={{ color: '#7C3AED', fontWeight: 'bold' }}>Cancel</Text>
-        </TouchableOpacity>
+    <Modal visible={visible} animationType="slide" transparent>
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.overlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.header}>
+                <Text style={styles.title}>Update Playlist</Text>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <Text style={{ color: '#7C3AED', fontWeight: 'bold' }}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <Animated.View entering={FadeInDown.duration(500)} style={styles.section}>
+                <Text style={styles.label}>Playlist Image</Text>
+                <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+                  {image ? (
+                    <Image source={{ uri: image }} style={styles.image} />
+                  ) : (
+                    <Text style={styles.imagePlaceholder}>Choose an image</Text>
+                  )}
+                </TouchableOpacity>
+              </Animated.View>
+
+              <Animated.View entering={FadeInDown.delay(200)} style={styles.section}>
+                <Text style={styles.label}>Playlist Name</Text>
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="Enter playlist name"
+                  placeholderTextColor="#ccc"
+                  style={styles.input}
+                />
+              </Animated.View>
+
+              <Animated.View entering={FadeInDown.delay(600)} style={{ marginTop: 24 }}>
+                <TouchableOpacity onPress={handleUpdatePlaylist} style={styles.button}>
+                  <Text style={styles.buttonText}>Update Playlist</Text>
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
+          </View>
+        </ScrollView>
       </View>
-
-      <Animated.View entering={FadeInDown.duration(500)} style={styles.section}>
-        <Text style={styles.label}>Playlist Image</Text>
-        <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-          {image ? (
-            <Image source={{ uri: image }} style={styles.image} />
-          ) : (
-            <Text style={styles.imagePlaceholder}>Choose an image</Text>
-          )}
-        </TouchableOpacity>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(200)} style={styles.section}>
-        <Text style={styles.label}>Playlist Name</Text>
-        <TextInput
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter playlist name"
-          placeholderTextColor="#ccc"
-          style={styles.input}
-        />
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(600)} style={{ marginTop: 24 }}>
-        <TouchableOpacity onPress={handleUpdatePlaylist} style={styles.button}>
-          <Text style={styles.buttonText}>Update Playlist</Text>
-        </TouchableOpacity>
-      </Animated.View>
-                </View>
-        </View>
-    </ScrollView>
     </Modal>
   );
 }
-;
-
 
 const STATUS_BAR_HEIGHT =
   Platform.OS === 'android' ? RNStatusBar.currentHeight ?? 0 : 0;
+
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -157,7 +187,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'flex-end',
   },
-    modalContainer: {
+  modalContainer: {
     flex: 1,
     backgroundColor: '#000',
     borderTopLeftRadius: 20,

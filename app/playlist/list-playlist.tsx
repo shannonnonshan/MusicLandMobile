@@ -15,6 +15,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   View
 } from 'react-native';
 import Animated, { SlideInLeft } from 'react-native-reanimated';
@@ -28,7 +29,7 @@ export default function ListPlaylistView() {
   const router = useRouter();
   const screenHeight = Dimensions.get('window').height;
   const { deviceId, loading } = useDeviceId();
-  const { setCurrentPlaylist, playSong } = useMusicContext();
+  const { setCurrentPlaylist } = useMusicContext();
 
   const { isPlayer, song: rawSong} = useLocalSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
@@ -92,7 +93,7 @@ export default function ListPlaylistView() {
             Your Playlist
           </Text>
         </View>
-
+          
         <Pressable
           onPress={() => setModalVisible(true)}
           style={{
@@ -108,7 +109,18 @@ export default function ListPlaylistView() {
           <Entypo name="add-to-list" size={20} color="white" />
         </Pressable>
       </View>
-
+        <View className="pt-2 w-full bg-[#000] px-4">
+          <TextInput
+            className="text-[#fff] bg-[#222] rounded-lg pr-3 py-2  pl-4 text-xl"
+            placeholder="Search songs, artists, albums..."
+            placeholderTextColor="#aaa"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <Text className="text-[#fff] pt-2 pb-3 text-xl mt-5 z-10">
+            Search result for: {searchQuery}
+          </Text>
+        </View>
       <ScrollView
   contentContainerStyle={{ padding: 16, paddingBottom: 80, minHeight: screenHeight }}
 >

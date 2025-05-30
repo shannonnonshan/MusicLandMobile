@@ -120,19 +120,20 @@ export default function TabSearchScreen() {
               <>
                 <Text className="text-white text-xl font-bold px-4 mt-6 mb-2">Albums</Text>
 
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingHorizontal:4, width:'100%'}}
-                >
-                  {albumResults.map((album, index) => (
-                    <AlbumCard
-                      key={`album-${album.id}`}
-                      album={album}
-                      onPress={() => {setCurrentAlbum(album)}}
-                    />
-                  ))}
-                </ScrollView>
+                  <View style={{ paddingHorizontal: 16 }}>
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={{ gap: 12 }}
+  >
+    {albumResults.map((album) => (
+      <View key={`album-${album.id}`} style={{ width: 250 }}>
+        <AlbumCard album={album} onPress={() => setCurrentAlbum(album)} />
+      </View>
+    ))}
+  </ScrollView>
+</View>
+
               </>
             )}
 
